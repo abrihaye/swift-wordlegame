@@ -9,17 +9,34 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.words) var words: Words
+    @State var wordToGuess: String = "AWAIT"
+    let wordToTest: String = "HELLO"
     
     var body: some View {
         VStack {
-            Text(words.random(length: 4) ?? "None")
+            HStack {
+                ForEach(Array(wordToTest.indices), id: \.self) { index in
+                    RoundedRectangle(cornerRadius: 10)
+                        .aspectRatio(1, contentMode: .fit)
+                        .padding(1)
+                        .overlay {
+                            Text(wordToTest)
+                        }
+                }
+            }
+            
+            Text(wordToGuess)
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
         }
         .padding()
-        .onChange(of: words.count) {
-            
+        .onChange(of: words.count, initial: true) {
+            if words.count == 0 {
+                wordToGuess = "AWAIT"
+            } else {
+                wordToGuess = words.random(length: 5) ?? "ERROR"
+            }
         }
     }
 }
