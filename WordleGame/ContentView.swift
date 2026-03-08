@@ -19,25 +19,29 @@ struct ContentView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .aspectRatio(1, contentMode: .fit)
                         .padding(1)
+                        .foregroundStyle(.clear)
                         .overlay {
-                            Text(wordToTest)
+                            Text(wordToTest[wordToTest.startIndex(by: index)])
                         }
                 }
             }
-            
             Text(wordToGuess)
+            
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-        }
-        .padding()
-        .onChange(of: words.count, initial: true) {
-            if words.count == 0 {
-                wordToGuess = "AWAIT"
-            } else {
+            Button ("Update Master") {
                 wordToGuess = words.random(length: 5) ?? "ERROR"
             }
         }
+        .padding()
+//        .onChange(of: words.count, initial: true) {
+//            if words.count == 0 {
+//                wordToGuess = "AWAIT"
+//            } else {
+//                wordToGuess = words.random(length: 5) ?? "ERROR"
+//            }
+//        }
     }
 }
 
