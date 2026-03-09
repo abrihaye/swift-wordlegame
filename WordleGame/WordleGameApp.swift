@@ -11,7 +11,7 @@ import SwiftUI
 struct WordleGameApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            WordleView()
         }
     }
 }
