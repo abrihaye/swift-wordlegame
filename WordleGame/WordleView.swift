@@ -34,23 +34,28 @@ struct WordleView: View {
             Spacer()
             keyboard
         }
-        .padding()
+        .padding(2)
     }
     
     var keyboard: some View {
-        VStack() {
+        VStack {
             ForEach(keyboardRows.indices, id: \.self) { index in
                 HStack {
                     let currentRow = keyboardRows[index].map { String($0) }
                     ForEach(currentRow.indices, id: \.self) { index in
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 5)
                             .overlay {
-                                Text((currentRow[index]))
-                                    .font(.system(size: 30.0))
-                                    .minimumScaleFactor(2/80.0)
-                                    .foregroundStyle(.white)
+                                Button {
+                                    print(currentRow[index])
+                                } label: {
+                                    Text((currentRow[index]))
+                                        .font(.system(size: 30.0))
+                                        .minimumScaleFactor(2/80.0)
+                                        .foregroundStyle(.white)
+                                }
                             }
                             .aspectRatio(1, contentMode: .fit)
+                            .frame(width: 30.0, height: 30.0)
                     }
                 }
             }
