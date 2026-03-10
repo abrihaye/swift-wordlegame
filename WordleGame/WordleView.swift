@@ -8,33 +8,51 @@
 import SwiftUI
 
 struct WordleView: View {
+    // MARK: Data IN
     @Environment(\.words) var words
+    
+    // MARK: Data Owned by Me
     @State var masterWord: String = "AWAIT"
-    let attempts: [String] = ["VERRE", "BOIRE", "TASSE"]
+    
+    @State private var game: Wordle = Wordle(masterCode: Code(kind: .master(isHidden: true), pegs: "HELLO".map{String($0)}))
+    
+    let guess: Code = Code(kind: .guess, pegs: "VERRE".map{String($0)})
+    
+//  let attempts: [Code] = [Code(kind: .attempt([.nomatch, .exact, .exact, .nomatch, .inexact]), pegs: "TESTE".map{String($0)})]
     
     let keyboardRows: [String] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
     
+    // MARK: - Body
     var body: some View {
         VStack {
-            HStack {
-                view(for: masterWord, which: .master)
-                    .onChange(of: words.count, initial: true) {
-                        if words.count == 0 {
-                            masterWord = "AWAIT"
-                        } else {
-                            masterWord = words.random(length: 5) ?? "ERROR"
-                        }
-                    }
-            }
-            ForEach(attempts.indices, id: \.self) { index in
-                HStack {
-                    view(for: attempts[index], which: .guess)
+            view(for: game.masterCode)
+            ScrollView {
+                view(for: guess)
+                ForEach(game.attempts.indices, id: \.self) { index in
+                        view(for: game.attempts[index])
                 }
             }
-            Spacer()
             keyboard
         }
-        .padding(2)
+        .padding()
+        .onChange(of: words.count, initial: true) {
+            if words.count == 0 {
+                masterWord = "AWAIT"
+            } else {
+                masterWord = words.random(length: 5) ?? "ERROR"
+            }
+        }
+    }
+    
+    var guessButton: some View {
+        Button("Guess") {
+            withAnimation {
+                game.guess = guess
+                game.attemptGuess()
+            }
+        }
+        .font(.system(size: 80.0))
+        .minimumScaleFactor(8/80.0)
     }
     
     var keyboard: some View {
@@ -62,40 +80,29 @@ struct WordleView: View {
         }
     }
     
-    var guessButton: some View {
-        Button("Guess") {
-            withAnimation {
-                masterWord = words.random(length: 5) ?? "ERROR"
-            }
-        }
-        .font(.system(size: 80.0))
-        .minimumScaleFactor(8/80.0)
-    }
+    
     
     @ViewBuilder
-    func view(for word: String, which kind: Code.Kind) -> some View {
-        let wordArray = Array(word)
+    func view(for code: Code) -> some View {
         HStack {
-            ForEach(wordArray.indices, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 10)
-                    .aspectRatio(1, contentMode: .fit)
-                    .foregroundStyle(kind == .master ? .black: .gray)
-                    .overlay {
-                        Text(String(wordArray[index]))
-                            .foregroundStyle(Color.white)
-                            .font(.system(size: 30))
-                            .minimumScaleFactor(0.1)
-                    }
-            }
+            CodeView(code: code)
             Color.clear.aspectRatio(1, contentMode: .fit)
                 .overlay {
-                    if (kind == .guess) {
+//                    if let matches = code.matches {
+//                        print("Match")
+//                    } else
+                    if (code.kind == .guess) {
                         guessButton
                     }
                 }
         }
     }
-    
+}
+
+extension Color {
+    static func gray(_ brightness: CGFloat) -> Color {
+        return Color(hue: 148/360, saturation: 0, brightness: brightness)
+    }
 }
 
 #Preview {
