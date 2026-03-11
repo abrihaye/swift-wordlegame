@@ -15,15 +15,7 @@ struct CodeView: View {
         ForEach(code.pegs.indices, id: \.self) { index in
             // Peg View
             let peg: String = code.pegs[index]
-            let matchColor = code.matches?[index] 
-            if let matches = code.matches {
-                switch matches[index] {
-                case .nomatch:
-                case .exact:
-                case .inexact:
-                }
-            }
-            
+            let pegMatch = code.matches?[index]
             RoundedRectangle(cornerRadius: 10)
                 .overlay {
                     if peg == Code.missingPeg {
@@ -32,7 +24,7 @@ struct CodeView: View {
                     }
                 }
                 .aspectRatio(1, contentMode: .fit)
-                .foregroundStyle(code.isHidden ? .black: .gray)
+                .foregroundStyle(MatchColor(match: pegMatch, isHidden: code.isHidden))
                 .overlay {
                     Text(String(code.pegs[index]))
                         .foregroundStyle(Color.white)
@@ -42,6 +34,22 @@ struct CodeView: View {
         }
     }
     
+    func MatchColor(match: Match?, isHidden: Bool = false) -> Color {
+        if isHidden {
+            return .black
+        } else if let match {
+            switch match {
+            case .exact:
+                return .green
+            case .inexact:
+                return .orange
+            default:
+                return .gray
+            }
+        } else {
+            return .gray
+        }
+    }
 }
 
 

@@ -12,11 +12,11 @@ struct WordleView: View {
     @Environment(\.words) var words
     
     // MARK: Data Owned by Me
-    @State var masterWord: String = "AWAIT"
-    
     @State private var game: Wordle = Wordle(masterCode: Code(kind: .master(isHidden: true), pegs: "HELLO".map{String($0)}))
     
-    let guess: Code = Code(kind: .guess, pegs: "VERRE".map{String($0)})
+    @State var masterWord: String = "AWAIT"
+    
+    let guess: Code = Code(kind: .guess, pegs: "HOTEL".map{String($0)})
     
 //  let attempts: [Code] = [Code(kind: .attempt([.nomatch, .exact, .exact, .nomatch, .inexact]), pegs: "TESTE".map{String($0)})]
     
