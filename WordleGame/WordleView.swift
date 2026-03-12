@@ -27,7 +27,7 @@ struct WordleView: View {
             view(for: game.masterCode)
             ScrollView {
                 view(for: game.guess)
-                ForEach(game.attempts.indices, id: \.self) { index in
+                ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                         view(for: game.attempts[index])
                 }
             }
@@ -36,7 +36,7 @@ struct WordleView: View {
                 selection = (selection + 1) % game.masterCode.pegs.count
             }
         }
-        .padding()
+        .padding(1)
         .onChange(of: words.count, initial: true) {
             if words.count == 0 {
                 game.masterCode = Code(kind: .master(isHidden: true), "AWAIT")

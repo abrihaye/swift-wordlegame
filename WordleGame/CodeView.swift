@@ -17,11 +17,12 @@ struct CodeView: View {
         ForEach(code.pegs.indices, id: \.self) { index in
             // Peg View
             PegView(peg: code.pegs[index])
+                .padding(Selection.border)
                 .foregroundStyle(MatchColor(kind: code.kind, at: index))
                 .background {
                     if selection == index, code.kind == .guess {
-                        RoundedRectangle(cornerRadius: 1)
-                            .foregroundStyle(.red)
+                        Selection.shape
+                            .foregroundStyle(Selection.color)
                     }
                 }
                 .onTapGesture {
@@ -36,23 +37,22 @@ struct CodeView: View {
     
     func MatchColor(kind: Code.Kind, at index: Int) -> Color {
         switch kind {
+        case .guess:
+            return .clear
         case .attempt(let match):
             return matchLUT[match[index]] ?? .clear
-        case .guess:
-            return .gray
         case let .master(isHidden):
             return (isHidden ? .black : .clear)
         default:
             return .clear
         }
     }
-
-    struct Selection {
-        static let border: CGFloat = 5
-        static let cornerRadius: CGFloat = 10
-        static let color: Color = Color.gray(0.85)
-        static let shape = RoundedRectangle(cornerRadius: cornerRadius)
-    }
 }
 
-
+struct Selection {
+    static let border: CGFloat = 5
+    static let cornerRadius: CGFloat = 10
+    //static let color: Color = Color.gray(0.85)
+    static let color: Color = .gray
+    static let shape = RoundedRectangle(cornerRadius: cornerRadius)
+}
