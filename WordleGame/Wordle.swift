@@ -14,12 +14,18 @@ struct Wordle {
     var guess: Code = Code(kind: .guess)
     var attempts: [Code] = []
     
+    // Check if the word exists and has the correct size
     mutating func attemptGuess() {
         var attempt = guess
         attempt.kind = .attempt(guess.match(against: masterCode))
         print(attempt.matches ?? "none")
         attempts.append(attempt)
         guess.reset()
+    }
+    
+    mutating func setGuessPeg(_ peg: Peg, at index: Int) {
+        guard guess.pegs.indices.contains(index) else { return }
+        guess.pegs[index] = peg
     }
 }
 
@@ -56,6 +62,16 @@ struct Code {
         }
     }
     
+    init(kind: Kind, _ word: String) {
+        self.kind = kind
+        self.pegs = word.map { String($0) }
+    }
+    
+    init(kind: Kind) {
+        self.kind = kind
+        print(self.pegs)
+    }
+    
     mutating func reset() {
         pegs = Array(repeating: Code.missingPeg, count: 5)
     }
@@ -83,4 +99,5 @@ struct Code {
             }
         }
     }
+    
 }

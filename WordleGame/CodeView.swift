@@ -10,45 +10,48 @@ struct CodeView: View {
     // MARK: Data In
     let code: Code
     
+    @Binding var selection: Int
+    
     // MARK: - BODY
     var body: some View {
         ForEach(code.pegs.indices, id: \.self) { index in
             // Peg View
-            let peg: String = code.pegs[index]
-            let pegMatch = code.matches?[index]
-            RoundedRectangle(cornerRadius: 10)
-                .overlay {
-                    if peg == Code.missingPeg {
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(Color.gray)
+            PegView(peg: code.pegs[index])
+                .foregroundStyle(MatchColor(kind: code.kind, at: index))
+                .background {
+                    if selection == index, code.kind == .guess {
+                        RoundedRectangle(cornerRadius: 1)
+                            .foregroundStyle(.red)
                     }
                 }
-                .aspectRatio(1, contentMode: .fit)
-                .foregroundStyle(MatchColor(match: pegMatch, isHidden: code.isHidden))
-                .overlay {
-                    Text(String(code.pegs[index]))
-                        .foregroundStyle(Color.white)
-                        .font(.system(size: 30))
-                        .minimumScaleFactor(0.1)
+                .onTapGesture {
+                    if code.kind == .guess {
+                        selection = index
+                    }
                 }
         }
     }
     
-    func MatchColor(match: Match?, isHidden: Bool = false) -> Color {
-        if isHidden {
-            return .black
-        } else if let match {
-            switch match {
-            case .exact:
-                return .green
-            case .inexact:
-                return .orange
-            default:
-                return .gray
-            }
-        } else {
+    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray]
+    
+    func MatchColor(kind: Code.Kind, at index: Int) -> Color {
+        switch kind {
+        case .attempt(let match):
+            return matchLUT[match[index]] ?? .clear
+        case .guess:
             return .gray
+        case let .master(isHidden):
+            return (isHidden ? .black : .clear)
+        default:
+            return .clear
         }
+    }
+
+    struct Selection {
+        static let border: CGFloat = 5
+        static let cornerRadius: CGFloat = 10
+        static let color: Color = Color.gray(0.85)
+        static let shape = RoundedRectangle(cornerRadius: cornerRadius)
     }
 }
 
