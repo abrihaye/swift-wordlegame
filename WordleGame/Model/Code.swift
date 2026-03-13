@@ -1,39 +1,12 @@
 //
-//  Wordle.swift
+//  Code.swift
 //  WordleGame
 //
-//  Created by Alexandre Brihaye on 2026-03-08.
+//  Created by Alexandre Brihaye on 2026-03-12.
 //
 
+
 import Foundation
-
-typealias Peg = String
-
-struct Wordle {
-    var masterCode: Code
-    var guess: Code = Code(kind: .guess)
-    var attempts: [Code] = []
-    
-    // Check if the word exists and has the correct size
-    mutating func attemptGuess() {
-        var attempt = guess
-        attempt.kind = .attempt(guess.match(against: masterCode))
-        print(attempt.matches ?? "none")
-        attempts.append(attempt)
-        guess.reset()
-    }
-    
-    mutating func setGuessPeg(_ peg: Peg, at index: Int) {
-        guard guess.pegs.indices.contains(index) else { return }
-        guess.pegs[index] = peg
-    }
-}
-
-enum Match {
-    case nomatch
-    case exact
-    case inexact
-}
 
 struct Code {
     var kind: Kind
@@ -60,6 +33,11 @@ struct Code {
         case .attempt(let matches): return matches
         default: return nil
         }
+    }
+    
+    var word: String {
+        get { pegs.joined() }
+        set { pegs = newValue.map{String($0)} }
     }
     
     init(kind: Kind, _ word: String) {
@@ -99,5 +77,4 @@ struct Code {
             }
         }
     }
-    
 }

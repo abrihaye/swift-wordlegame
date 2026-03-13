@@ -10,8 +10,11 @@ import SwiftUI
 struct PegView: View {
     // MARK: Data In
     let peg: Peg
+    let matchState: Match?
     
     let pegShape = RoundedRectangle(cornerRadius: 10)
+    
+    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray]
     
     var body: some View {
         pegShape
@@ -21,16 +24,25 @@ struct PegView: View {
                         .strokeBorder(Color.gray)
                 }
             }
+            .contentShape(pegShape)
             .aspectRatio(1, contentMode: .fit)
             .overlay {
                 Text(peg)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.primary)
                     .font(.system(size: 30))
                     .minimumScaleFactor(0.1)
             }
+            .foregroundStyle(MatchColor())
+    }
+    
+    func MatchColor() -> Color {
+        if let matchState {
+            return matchLUT[matchState] ?? .clear
+        }
+        return .clear
     }
 }
 
 #Preview {
-    PegView(peg: "T")
+    PegView(peg: "T", matchState: nil)
 }

@@ -27,7 +27,7 @@ struct KeyboardChooser: View {
                                     Text(peg)
                                         .font(.system(size: 30.0))
                                         .minimumScaleFactor(2/80.0)
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(.primary)
                                 }
                             }
                             .aspectRatio(1, contentMode: .fit)

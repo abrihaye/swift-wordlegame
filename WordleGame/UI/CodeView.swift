@@ -10,41 +10,38 @@ struct CodeView: View {
     // MARK: Data In
     let code: Code
     
+    // MARK: Data Shared with Me
     @Binding var selection: Int
     
     // MARK: - BODY
     var body: some View {
         ForEach(code.pegs.indices, id: \.self) { index in
             // Peg View
-            PegView(peg: code.pegs[index])
+            PegView(peg: code.pegs[index], matchState: checkMatch(for: index))
                 .padding(Selection.border)
-                .foregroundStyle(MatchColor(kind: code.kind, at: index))
                 .background {
                     if selection == index, code.kind == .guess {
                         Selection.shape
                             .foregroundStyle(Selection.color)
                     }
                 }
+                .overlay {
+                    Selection.shape
+                        .foregroundStyle(code.isHidden ? Color.black : .clear)
+                }
                 .onTapGesture {
                     if code.kind == .guess {
                         selection = index
                     }
-                }
+            }
         }
     }
     
-    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray]
-    
-    func MatchColor(kind: Code.Kind, at index: Int) -> Color {
-        switch kind {
-        case .guess:
-            return .clear
-        case .attempt(let match):
-            return matchLUT[match[index]] ?? .clear
-        case let .master(isHidden):
-            return (isHidden ? .black : .clear)
-        default:
-            return .clear
+    func checkMatch(for index: Int) -> Match? {
+        if let matches = code.matches {
+            return matches[index]
+        } else {
+            return nil
         }
     }
 }

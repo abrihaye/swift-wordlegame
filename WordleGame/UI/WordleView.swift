@@ -13,11 +13,9 @@ struct WordleView: View {
     @Environment(\.words) var words
     
     // MARK: Data Owned by Me
-    @State private var game: Wordle = Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO"),
-                                             guess: Code(kind: .guess))
+    @State private var game: Wordle = Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO"))
     @State private var selection: Int = 0
-    
-//  let attempts: [Code] = [Code(kind: .attempt([.nomatch, .exact, .exact, .nomatch, .inexact]), pegs: "TESTE".map{String($0)})]
+    @State private var checker = UITextChecker()
     
     let keyboard: [String] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
     
@@ -49,11 +47,13 @@ struct WordleView: View {
     var guessButton: some View {
         Button("Guess") {
             withAnimation {
-                game.attemptGuess()
+                if checker.isAWord(game.guess.word) {
+                    game.attemptGuess()
+                }
             }
         }
-        .font(.system(size: 80.0))
-        .minimumScaleFactor(8/80.0)
+        .font(.system(size: GuessButton.maximumFontSize))
+        .minimumScaleFactor(GuessButton.scaleFactor)
     }
     
     @ViewBuilder
@@ -67,6 +67,12 @@ struct WordleView: View {
                     }
                 }
         }
+    }
+    
+    struct GuessButton {
+        static let minimumFontSize: CGFloat = 8
+        static let maximumFontSize: CGFloat = 80
+        static let scaleFactor = minimumFontSize / maximumFontSize
     }
 }
 
