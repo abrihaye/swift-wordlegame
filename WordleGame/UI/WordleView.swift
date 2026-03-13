@@ -32,6 +32,9 @@ struct WordleView: View {
             KeyboardChooser(for: keyboard) { peg in
                 game.setGuessPeg(peg, at: selection)
                 selection = (selection + 1) % game.masterCode.pegs.count
+            } deleteCb: {
+                selection = selection == 0 ? game.masterCode.pegs.count - 1: selection - 1
+                game.resetGuessPeg(at: selection)
             }
         }
         .padding(1)

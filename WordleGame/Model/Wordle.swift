@@ -26,6 +26,11 @@ struct Wordle {
         guard guess.pegs.indices.contains(index) else { return }
         guess.pegs[index] = peg
     }
+    
+    mutating func resetGuessPeg(at index: Int) {
+        guard guess.pegs.indices.contains(index) else { return }
+        guess.pegs[index] = Code.missingPeg
+    }
 }
 
 enum Match {

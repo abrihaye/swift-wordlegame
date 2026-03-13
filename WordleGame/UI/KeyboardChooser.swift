@@ -10,9 +10,11 @@ import SwiftUI
 struct KeyboardChooser: View {
     // MARK: Data In
     let keyboard: [[Peg]]
+    let deleteSymbol = Image(systemName: "delete.backward")
     
     // MARK: Data Out function
     var onChoose: ((Peg) -> Void)?
+    var onDelete: (() -> Void)?
     
     var body: some View {
         VStack {
@@ -32,20 +34,33 @@ struct KeyboardChooser: View {
                             }
                             .aspectRatio(1, contentMode: .fit)
                             .frame(width: 30.0, height: 30.0)
+                        
+                    }
+                    if keyboardRow == keyboard.last {
+                        Button {
+                            onDelete?()
+                        } label: {
+                            deleteSymbol
+                                .frame(width: 30.0, height: 30.0)
+                        }
                     }
                 }
+               
             }
         }
     }
     
-    init(for keyArray: [String], cb onChoose: ((Peg) -> Void)?) {
-        self.keyboard = keyArray.map{ $0.map{ String($0) } }
+    init(for keyArray: [String], cb onChoose: ((Peg) -> Void)?, deleteCb onDelete: (() -> Void)?) {
+        self.keyboard = keyArray.map { $0.map { String($0) } }
         self.onChoose = onChoose
+        self.onDelete = onDelete
     }
 }
 
 #Preview {
     KeyboardChooser(for: ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]) { peg in
         print("chose \(peg)")
+    } deleteCb: {
+        print("delete")
     }
 }
