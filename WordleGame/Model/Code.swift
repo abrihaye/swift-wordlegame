@@ -10,7 +10,7 @@ import Foundation
 
 struct Code {
     var kind: Kind
-    var pegs: [Peg] = Array(repeating: Code.missingPeg, count: 5)
+    var pegs: [Peg]
     
     static let missingPeg: Peg = ""
     
@@ -45,9 +45,9 @@ struct Code {
         self.pegs = word.map { String($0) }
     }
     
-    init(kind: Kind) {
+    init(kind: Kind, count: Int = 5) {
         self.kind = kind
-        print(self.pegs)
+        self.pegs = Array(repeating: Code.missingPeg, count: count)
     }
     
     mutating func reset() {

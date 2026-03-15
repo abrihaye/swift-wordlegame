@@ -17,24 +17,24 @@ struct WordleView: View {
     @State private var selection: Int = 0
     @State private var checker = UITextChecker()
     
-    let keyboard: [String] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
+    let pegChoices: [String] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
     
     // MARK: - Body
     var body: some View {
         VStack {
             view(for: game.masterCode)
             ScrollView {
-                view(for: game.guess)
+                if !game.isOver {
+                    view(for: game.guess)
+                }
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                         view(for: game.attempts[index])
                 }
             }
-            KeyboardChooser(for: keyboard) { peg in
-                game.setGuessPeg(peg, at: selection)
-                selection = (selection + 1) % game.masterCode.pegs.count
-            } deleteCb: {
-                selection = selection == 0 ? game.masterCode.pegs.count - 1: selection - 1
-                game.resetGuessPeg(at: selection)
+            if !game.isOver {
+                keyboard
+            } else {
+                resetButton
             }
         }
         .padding(1)
@@ -42,17 +42,34 @@ struct WordleView: View {
             if words.count == 0 {
                 game.masterCode = Code(kind: .master(isHidden: true), "AWAIT")
             } else {
-                game.masterCode = Code(kind: .master(isHidden: true), (words.random(length: 5) ?? "ERROR"))
+                game.masterCode = Code(kind: .master(isHidden: true), (words.random(length: Int.random(in: 3...6)) ?? "ERROR"))
             }
+        }
+    }
+    
+    var keyboard: some View {
+        KeyboardChooser(for: pegChoices, dict: game.pegKeys) { peg in
+            game.setGuessPeg(peg, at: selection)
+            selection = (selection + 1) % game.masterCode.pegs.count
+        } deleteCb: {
+            selection = selection == 0 ? game.masterCode.pegs.count - 1: selection - 1
+            game.resetGuessPeg(at: selection)
+        }
+    }
+    
+    var resetButton: some View {
+        Button("Reset") {
+            game = Wordle(masterCode: Code(kind: .master(isHidden: true), (words.random(length: Int.random(in: 3...6)) ?? "ERROR")))
         }
     }
     
     var guessButton: some View {
         Button("Guess") {
             withAnimation {
-                if checker.isAWord(game.guess.word) {
+                if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased()) {
+                    selection = 0
                     game.attemptGuess()
-                }
+                }   
             }
         }
         .font(.system(size: GuessButton.maximumFontSize))

@@ -11,10 +11,14 @@ struct KeyboardChooser: View {
     // MARK: Data In
     let keyboard: [[Peg]]
     let deleteSymbol = Image(systemName: "delete.backward")
+    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray, .notTried: .black]
+    
+    let keyMatches: [Peg: Match]
     
     // MARK: Data Out function
     var onChoose: ((Peg) -> Void)?
     var onDelete: (() -> Void)?
+    
     
     var body: some View {
         VStack {
@@ -22,15 +26,17 @@ struct KeyboardChooser: View {
                 HStack {
                     ForEach(keyboardRow, id: \.self) { peg in
                         RoundedRectangle(cornerRadius: 5)
+                            .foregroundStyle(colorForKey(peg))
                             .overlay {
                                 Button {
                                     onChoose?(peg)
                                 } label: {
                                     Text(peg)
+                                        .foregroundStyle(.primary)
                                         .font(.system(size: 30.0))
                                         .minimumScaleFactor(2/80.0)
-                                        .foregroundStyle(.primary)
                                 }
+
                             }
                             .aspectRatio(1, contentMode: .fit)
                             .frame(width: 30.0, height: 30.0)
@@ -50,17 +56,26 @@ struct KeyboardChooser: View {
         }
     }
     
-    init(for keyArray: [String], cb onChoose: ((Peg) -> Void)?, deleteCb onDelete: (() -> Void)?) {
+    func colorForKey(_ peg: Peg) -> Color {
+        matchLUT[keyMatches[peg] ?? .notTried] ?? .black
+    }
+    
+    init(for keyArray: [String],
+         dict keysToMatch: [Peg: Match],
+         cb onChoose: ((Peg) -> Void)?,
+         deleteCb onDelete: (() -> Void)?)
+    {
         self.keyboard = keyArray.map { $0.map { String($0) } }
         self.onChoose = onChoose
         self.onDelete = onDelete
+        self.keyMatches = keysToMatch
     }
 }
 
-#Preview {
-    KeyboardChooser(for: ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]) { peg in
-        print("chose \(peg)")
-    } deleteCb: {
-        print("delete")
-    }
-}
+//#Preview {
+//    KeyboardChooser(for: ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]) { peg in
+//        print("chose \(peg)")
+//    } deleteCb: {
+//        print("delete")
+//    }
+//}
