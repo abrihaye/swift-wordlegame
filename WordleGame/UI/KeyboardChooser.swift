@@ -32,7 +32,7 @@ struct KeyboardChooser: View {
                                     onChoose?(peg)
                                 } label: {
                                     Text(peg)
-                                        .foregroundStyle(.primary)
+                                        .foregroundStyle(.white)
                                         .font(.system(size: 30.0))
                                         .minimumScaleFactor(2/80.0)
                                 }

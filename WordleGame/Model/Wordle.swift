@@ -12,6 +12,7 @@ typealias Peg = String
 struct Wordle {
     var masterCode: Code {
         didSet {
+            print(masterCode)
             guess = Code(kind: .guess, count: masterCode.pegs.count)
         }
     }
@@ -24,11 +25,11 @@ struct Wordle {
             attempts.last?.pegs == masterCode.pegs
     }
     
-    mutating func reset() {
-        masterCode = Code(kind: .master(isHidden: true))
-        guess = Code(kind: .guess)
+    mutating func reset(words: Words) {
         attempts = []
         pegKeys = [:]
+        masterCode = Code(kind: .master(isHidden: true), (words.random(length: Int.random(in: 3...6)) ?? "ERROR"))
+        guess = Code(kind: .guess, count: masterCode.pegs.count)
     }
     
     // Check if the word exists and has the correct size
@@ -45,6 +46,15 @@ struct Wordle {
         if isOver {
             masterCode.kind = .master(isHidden: false)
         }
+    }
+    
+    mutating func updateMaster(words: Words) {
+        if words.count == 0, self.masterCode.word != "AWAIT" {
+            self.masterCode = Code(kind: .master(isHidden: true), "AWAIT")
+        } else {
+            self.masterCode = Code(kind: .master(isHidden: true), (words.random(length: Int.random(in: 3...6)) ?? "ERROR"))
+        }
+        guess = Code(kind: .guess, count: masterCode.pegs.count)
     }
     
     mutating func setGuessPeg(_ peg: Peg, at index: Int) {

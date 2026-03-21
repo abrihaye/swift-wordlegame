@@ -51,7 +51,7 @@ struct Code {
     }
     
     mutating func reset() {
-        pegs = Array(repeating: Code.missingPeg, count: 5)
+        pegs = Array(repeating: Code.missingPeg, count: pegs.count)
     }
     
     func match(against otherCode: Code) -> [Match] {
