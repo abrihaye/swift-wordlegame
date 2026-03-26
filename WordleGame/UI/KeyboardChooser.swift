@@ -9,21 +9,25 @@ import SwiftUI
 
 struct KeyboardChooser: View {
     // MARK: Data In
-    let keyboard: [[Peg]]
-    let deleteSymbol = Image(systemName: "delete.backward")
-    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray, .notTried: .black]
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     
+    let keyboard: [[Peg]]
+    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray, .notTried: .primary]
     let keyMatches: [Peg: Match]
     
     // MARK: Data Out function
     var onChoose: ((Peg) -> Void)?
     var onDelete: (() -> Void)?
     
-    
     var body: some View {
         VStack {
             ForEach(keyboard, id: \.self) { keyboardRow in
-                HStack {
+                let pegCount = 10 - keyboardRow.count - (keyboardRow == keyboard.last ? 1 : 0)
+                HStack(alignment: .center) {
+                    if pegCount > 0 {
+                        Color.clear
+                            .aspectRatio(Double(pegCount) / 2.0, contentMode: .fit)
+                    }
                     ForEach(keyboardRow, id: \.self) { peg in
                         RoundedRectangle(cornerRadius: 5)
                             .foregroundStyle(colorForKey(peg))
@@ -32,28 +36,27 @@ struct KeyboardChooser: View {
                                     onChoose?(peg)
                                 } label: {
                                     Text(peg)
-                                        .foregroundStyle(.white)
-                                        .font(.system(size: 30.0))
-                                        .minimumScaleFactor(2/80.0)
+                                        .foregroundStyle(Color.keyboardText(for: colorScheme))
+                                        .flexibleFontSystem()
                                 }
-
+                                //.buttonStyle(.plain)
                             }
                             .aspectRatio(1, contentMode: .fit)
-                            .frame(width: 30.0, height: 30.0)
-                        
+                            .frame(maxWidth: 60.0, maxHeight: 60.0)
+                    }
+                    if pegCount > 0 {
+                        Color.clear
+                            .aspectRatio(Double(pegCount) / 2.0, contentMode: .fit)
                     }
                     if keyboardRow == keyboard.last {
-                        Button {
+                        Button("Delete", systemImage: "delete.backward") {
                             onDelete?()
-                        } label: {
-                            deleteSymbol
-                                .frame(width: 30.0, height: 30.0)
                         }
                     }
                 }
-               
             }
         }
+        .aspectRatio(10/3, contentMode: .fit)
     }
     
     func colorForKey(_ peg: Peg) -> Color {

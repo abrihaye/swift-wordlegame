@@ -26,7 +26,7 @@ struct WordleView: View {
         VStack {
             resetButton
                 .onChange(of: words.count, initial: true) {
-                    game.updateMaster(words: words)
+                    getMasterCodeFromWords()
                 }
             CodeView(code: game.masterCode)
                 .transaction { transaction in
@@ -37,7 +37,7 @@ struct WordleView: View {
             ScrollView {
                 if !game.isOver || restarting {
                     CodeView(code: game.guess, selection: $selection) {
-                        Button("Guess", action: guess)
+                        Button("Guess", action: guess).flexibleFontSystem()
                     }
                     .animation(nil, value: game.attempts.count)
                     .opacity(restarting ? 0 : 1)
@@ -75,7 +75,7 @@ struct WordleView: View {
     }
     
     var resetButton: some View {
-        Button("Reset") {
+        Button("Reset", systemImage: "arrow.circlepath") {
             withAnimation(.restart) {
                 restarting = true
                 game.reset(words: words)
@@ -85,6 +85,16 @@ struct WordleView: View {
                 }
             }
         }
+    }
+    
+    func getMasterCodeFromWords() {
+        var newMasterCode = Code(kind: .master(isHidden: true), "")
+        if words.count == 0 {
+            newMasterCode.word = "AWAIT"
+        } else {
+            newMasterCode.word = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
+        }
+        game.updateMaster(masterCode: newMasterCode)
     }
     
     func guess() {
@@ -100,23 +110,6 @@ struct WordleView: View {
         }
     }
     
-}
-
-extension Animation {
-    static let wordle = Animation.bouncy(duration: 3)
-    static let guess = Animation.wordle
-    static let selection = Animation.wordle
-    static let restart = Animation.wordle
-}
-
-extension AnyTransition {
-    static let keyboard = AnyTransition.offset(x: 0, y:200)
-}
-
-extension Color {
-    static func gray(_ brightness: CGFloat) -> Color {
-        return Color(hue: 148/360, saturation: 0, brightness: brightness)
-    }
 }
 
 #Preview {

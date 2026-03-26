@@ -48,12 +48,8 @@ struct Wordle {
         }
     }
     
-    mutating func updateMaster(words: Words) {
-        if words.count == 0, self.masterCode.word != "AWAIT" {
-            self.masterCode = Code(kind: .master(isHidden: true), "AWAIT")
-        } else {
-            self.masterCode = Code(kind: .master(isHidden: true), (words.random(length: Int.random(in: 3...6)) ?? "ERROR"))
-        }
+    mutating func updateMaster(masterCode: Code) {
+        self.masterCode = masterCode
         guess = Code(kind: .guess, count: masterCode.pegs.count)
     }
     
