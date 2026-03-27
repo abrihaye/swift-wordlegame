@@ -12,7 +12,6 @@ struct KeyboardChooser: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     
     let keyboard: [[Peg]]
-    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray, .notTried: .primary]
     let keyMatches: [Peg: Match]
     
     // MARK: Data Out function
@@ -21,34 +20,15 @@ struct KeyboardChooser: View {
     
     var body: some View {
         VStack {
-            ForEach(keyboard, id: \.self) { keyboardRow in
-                let pegCount = 10 - keyboardRow.count - (keyboardRow == keyboard.last ? 1 : 0)
+            ForEach(keyboard.indices, id: \.self) { index in
+                let keyboardRow = keyboard[index]
                 HStack(alignment: .center) {
-                    if pegCount > 0 {
-                        Color.clear
-                            .aspectRatio(Double(pegCount) / 2.0, contentMode: .fit)
+                    emptyFiller(at: index)
+                    ForEach(keyboardRow, id: \.self) { key in
+                        KeyView(key: key, state: keyMatches[key], action: onChoose)
                     }
-                    ForEach(keyboardRow, id: \.self) { peg in
-                        RoundedRectangle(cornerRadius: 5)
-                            .foregroundStyle(colorForKey(peg))
-                            .overlay {
-                                Button {
-                                    onChoose?(peg)
-                                } label: {
-                                    Text(peg)
-                                        .foregroundStyle(Color.keyboardText(for: colorScheme))
-                                        .flexibleFontSystem()
-                                }
-                                //.buttonStyle(.plain)
-                            }
-                            .aspectRatio(1, contentMode: .fit)
-                            .frame(maxWidth: 60.0, maxHeight: 60.0)
-                    }
-                    if pegCount > 0 {
-                        Color.clear
-                            .aspectRatio(Double(pegCount) / 2.0, contentMode: .fit)
-                    }
-                    if keyboardRow == keyboard.last {
+                    emptyFiller(at: index)
+                    if index == keyboard.count - 1 {
                         Button("Delete", systemImage: "delete.backward") {
                             onDelete?()
                         }
@@ -59,9 +39,19 @@ struct KeyboardChooser: View {
         .aspectRatio(10/3, contentMode: .fit)
     }
     
-    func colorForKey(_ peg: Peg) -> Color {
-        matchLUT[keyMatches[peg] ?? .notTried] ?? .black
+    @ViewBuilder
+    func emptyFiller(at index: Int) -> some View {
+        let count = keyboard[index].count
+        let isLast = index == keyboard.count - 1
+        let pegCount = Double(10 - count - (isLast ? 1 : 0)) / 2
+        if pegCount > 0 {
+            Color.clear
+                .aspectRatio(pegCount, contentMode: .fit)
+        } else {
+            EmptyView()
+        }
     }
+    
     
     init(for keyArray: [String],
          dict keysToMatch: [Peg: Match],
