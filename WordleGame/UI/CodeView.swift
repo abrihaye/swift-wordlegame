@@ -25,7 +25,6 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
          ancillaryView: @escaping () -> AncillaryView = { EmptyView() },
          shouldReveal: Bool = false)
     {
-        print(code)
         self.code = code
         self._selection = selection
         self.ancillaryView = ancillaryView
@@ -100,7 +99,7 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
 }
 
 fileprivate struct Selection {
-    static let border: CGFloat = 5
+    static let border: CGFloat = 3
     static let cornerRadius: CGFloat = 10
     //static let color: Color = Color.gray(0.85)
     static let color: Color = Color.gray(0.85)

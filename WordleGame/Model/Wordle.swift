@@ -40,13 +40,15 @@ struct Wordle {
         let matches = guess.match(against: masterCode)
         
         attempt.kind = .attempt(matches)
-        updatePegChoices(for: guess.pegs, matches: matches)
-        attempts.append(attempt)
-        
-        print(attempts)
-        guess.reset()
-        if isOver {
-            masterCode.kind = .master(isHidden: false)
+        if !attempts.contains(attempt) {
+            updatePegChoices(for: guess.pegs, matches: matches)
+            attempts.append(attempt)
+            
+            guess.reset()
+            
+            if isOver {
+                masterCode.kind = .master(isHidden: false)
+            }
         }
     }
     
@@ -78,7 +80,7 @@ struct Wordle {
 
 extension Wordle: Identifiable, Hashable, Equatable {
     static func == (lhs: Wordle, rhs: Wordle) -> Bool {
-        return lhs.id == rhs.id && lhs.attempts == rhs.attempts
+        return lhs.id == rhs.id && lhs.attempts == rhs.attempts && lhs.masterCode == rhs.masterCode && lhs.pegKeys == rhs.pegKeys
     }
     
     func hash(into hasher: inout Hasher) {

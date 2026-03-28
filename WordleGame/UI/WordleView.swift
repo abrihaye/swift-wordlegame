@@ -101,13 +101,11 @@ struct WordleView: View {
     func guess() {
         withAnimation(Animation.guess) {
             if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased()) {
-                print("Hi")
                 selection = 0
                 game.attemptGuess()
             }
         } completion: {
             withAnimation {
-                print("Hi")
                 activeRevealIndex = game.attempts.count - 1
             }
         }

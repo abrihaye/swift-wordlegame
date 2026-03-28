@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Code {
+struct Code : Equatable {
     var kind: Kind
     var pegs: [Peg]
     
