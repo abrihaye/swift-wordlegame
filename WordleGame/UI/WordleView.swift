@@ -14,6 +14,7 @@ struct WordleView: View {
     
     // MARK: Data Owned by Me
     @State private var game: Wordle = Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO"))
+    //@Binding var game: Wordle
     @State private var selection: Int = 0
     @State private var restarting = false
     @State private var checker = UITextChecker()
@@ -100,11 +101,13 @@ struct WordleView: View {
     func guess() {
         withAnimation(Animation.guess) {
             if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased()) {
+                print("Hi")
                 selection = 0
                 game.attemptGuess()
             }
         } completion: {
             withAnimation {
+                print("Hi")
                 activeRevealIndex = game.attempts.count - 1
             }
         }

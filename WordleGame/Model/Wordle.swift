@@ -10,6 +10,8 @@ import Foundation
 typealias Peg = String
 
 struct Wordle {
+    let id = UUID()
+    
     var masterCode: Code {
         didSet {
             print(masterCode)
@@ -39,9 +41,9 @@ struct Wordle {
         
         attempt.kind = .attempt(matches)
         updatePegChoices(for: guess.pegs, matches: matches)
-        
         attempts.append(attempt)
         
+        print(attempts)
         guess.reset()
         if isOver {
             masterCode.kind = .master(isHidden: false)
@@ -74,6 +76,16 @@ struct Wordle {
     }
 }
 
+extension Wordle: Identifiable, Hashable, Equatable {
+    static func == (lhs: Wordle, rhs: Wordle) -> Bool {
+        return lhs.id == rhs.id && lhs.attempts == rhs.attempts
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
 enum Match : Int, Comparable {
     case notTried = 0
     case nomatch = 1
@@ -84,5 +96,4 @@ enum Match : Int, Comparable {
         return lhs.rawValue < rhs.rawValue
     }
 }
-
 

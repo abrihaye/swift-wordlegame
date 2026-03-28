@@ -25,6 +25,7 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
          ancillaryView: @escaping () -> AncillaryView = { EmptyView() },
          shouldReveal: Bool = false)
     {
+        print(code)
         self.code = code
         self._selection = selection
         self.ancillaryView = ancillaryView

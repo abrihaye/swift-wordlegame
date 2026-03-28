@@ -52,7 +52,6 @@ struct KeyboardChooser: View {
         }
     }
     
-    
     init(for keyArray: [String],
          dict keysToMatch: [Peg: Match],
          cb onChoose: ((Peg) -> Void)?,

@@ -41,7 +41,13 @@ struct Code {
     }
     
     init(kind: Kind, _ word: String) {
-        self.kind = kind
+        var finalKind: Kind
+        if case .attempt(let matches) = kind, word.count != matches.count {
+            finalKind = .attempt(Array(repeating: Match.notTried, count: word.count))
+        } else {
+            finalKind = kind
+        }
+        self.kind = finalKind
         self.pegs = word.map { String($0) }
     }
     
