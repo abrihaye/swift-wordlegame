@@ -35,6 +35,13 @@ struct PegView: View {
                   angle = 180
               }
           }
+          .onAppear {
+              if isRevealed {
+                  // Use a slight delay or just set it to 180
+                  // depending on if you want it to "pop" or "slide" in
+                  angle = 180
+              }
+          }
     }
 
     func face(color: Color) -> some View {
@@ -65,7 +72,7 @@ struct PegView: View {
 }
 
 #Preview {
-    PegView(peg: "T", matchState: nil, isRevealed: true)
+    PegView(peg: "T", matchState: .exact, isRevealed: true)
 }
 
 //pegShape

@@ -9,9 +9,9 @@ import Foundation
 
 typealias Peg = String
 
-struct Wordle {
-    let id = UUID()
-    
+@Observable
+class Wordle {
+    var name: String
     var masterCode: Code {
         didSet {
             print(masterCode)
@@ -27,7 +27,13 @@ struct Wordle {
             attempts.last?.pegs == masterCode.pegs
     }
     
-    mutating func reset(words: Words) {
+    init(name: String = "Wordle", masterCode: Code,  attempts: [Code] = []) {
+        self.name = name
+        self.masterCode = masterCode
+        self.attempts = attempts
+    }
+    
+    func reset(words: Words) {
         attempts = []
         pegKeys = [:]
         masterCode = Code(kind: .master(isHidden: true), (words.random(length: Int.random(in: 3...6)) ?? "ERROR"))
@@ -35,7 +41,7 @@ struct Wordle {
     }
     
     // Check if the word exists and has the correct size
-    mutating func attemptGuess() {
+    func attemptGuess() {
         var attempt = guess
         let matches = guess.match(against: masterCode)
         
@@ -52,22 +58,22 @@ struct Wordle {
         }
     }
     
-    mutating func updateMaster(masterCode: Code) {
+    func updateMaster(masterCode: Code) {
         self.masterCode = masterCode
         guess = Code(kind: .guess, count: masterCode.pegs.count)
     }
     
-    mutating func setGuessPeg(_ peg: Peg, at index: Int) {
+    func setGuessPeg(_ peg: Peg, at index: Int) {
         guard guess.pegs.indices.contains(index) else { return }
         guess.pegs[index] = peg
     }
     
-    mutating func resetGuessPeg(at index: Int) {
+    func resetGuessPeg(at index: Int) {
         guard guess.pegs.indices.contains(index) else { return }
         guess.pegs[index] = Code.missingPeg
     }
     
-    mutating func updatePegChoices(for pegs: [Peg], matches: [Match]) {
+    func updatePegChoices(for pegs: [Peg], matches: [Match]) {
         for index in 0..<pegs.count {
             let current = pegKeys[pegs[index]] ?? .notTried
             
@@ -80,7 +86,7 @@ struct Wordle {
 
 extension Wordle: Identifiable, Hashable, Equatable {
     static func == (lhs: Wordle, rhs: Wordle) -> Bool {
-        return lhs.id == rhs.id && lhs.attempts == rhs.attempts && lhs.masterCode == rhs.masterCode && lhs.pegKeys == rhs.pegKeys
+        return lhs.id == rhs.id
     }
     
     func hash(into hasher: inout Hasher) {

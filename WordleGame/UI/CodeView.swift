@@ -25,6 +25,8 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
          ancillaryView: @escaping () -> AncillaryView = { EmptyView() },
          shouldReveal: Bool = false)
     {
+        print(code.kind)
+        print("Should Reveal : \(shouldReveal)")
         self.code = code
         self._selection = selection
         self.ancillaryView = ancillaryView
@@ -37,7 +39,7 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
             ForEach(code.pegs.indices, id: \.self) { index in
                 // Peg View
                 PegView(peg: code.pegs[index], matchState: checkMatch(for: index), isRevealed: index < revealedCount)
-                    .padding(Selection.border)
+                    .padding(1)
                     .background { // Selection Background
                         Group {
                             if selection == index, code.kind == .guess {
@@ -62,6 +64,9 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
                         }
                     }
             }
+//            .onAppear {
+//                    startRevealIfNeeded()
+//            }
             .onChange(of: shouldReveal) {
                 startRevealIfNeeded()
             }
@@ -73,13 +78,13 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
     }
     
     func startRevealIfNeeded() -> () {
-        guard shouldReveal == true else {return}
-        guard !didStartRevealing else {return}
+        guard shouldReveal, !didStartRevealing else {return}
         
         if case .attempt = code.kind {
             didStartRevealing = true
             Task {
                 for index in code.pegs.indices {
+                    print("Hit")
                     withAnimation {
                         revealedCount = index + 1
                     }

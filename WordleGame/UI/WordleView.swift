@@ -12,13 +12,16 @@ struct WordleView: View {
     // MARK: Data IN
     @Environment(\.words) var words
     
+    // MARK: Data Shared with Me
+    let game: Wordle
+    
     // MARK: Data Owned by Me
-    @State private var game: Wordle = Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO"))
+    
     //@Binding var game: Wordle
     @State private var selection: Int = 0
     @State private var restarting = false
     @State private var checker = UITextChecker()
-    @State private var activeRevealIndex: Int?
+    @State private var activeRevealIndex: Int = -1
     
     let pegChoices: [String] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
     
@@ -79,6 +82,7 @@ struct WordleView: View {
         Button("Reset", systemImage: "arrow.circlepath") {
             withAnimation(.restart) {
                 restarting = true
+                activeRevealIndex = -1
                 game.reset(words: words)
             } completion: {
                 withAnimation (.restart) {
@@ -90,16 +94,20 @@ struct WordleView: View {
     
     func getMasterCodeFromWords() {
         var newMasterCode = Code(kind: .master(isHidden: true), "")
-        if words.count == 0 {
-            newMasterCode.word = "AWAIT"
-        } else {
-            newMasterCode.word = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
+        if game.attempts.count == 0 {
+            if words.count == 0 {
+                newMasterCode.word = "AWAIT"
+            } else {
+                newMasterCode.word = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
+            }
+            game.updateMaster(masterCode: newMasterCode)
         }
-        game.updateMaster(masterCode: newMasterCode)
+            
     }
     
     func guess() {
         withAnimation(Animation.guess) {
+            print("current activeReveal index : ", activeRevealIndex)
             if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased()) {
                 selection = 0
                 game.attemptGuess()
@@ -114,5 +122,6 @@ struct WordleView: View {
 }
 
 #Preview {
-    WordleView()
+    @Previewable @State var game = Wordle(masterCode: Code(kind: .master(isHidden: false), "HELLO"))
+    WordleView(game: game)
 }
