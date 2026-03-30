@@ -64,9 +64,9 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
                         }
                     }
             }
-//            .onAppear {
-//                    startRevealIfNeeded()
-//            }
+            .onAppear {
+                    startRevealIfNeeded()
+            }
             .onChange(of: shouldReveal) {
                 startRevealIfNeeded()
             }
