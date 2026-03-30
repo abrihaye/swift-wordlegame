@@ -17,7 +17,7 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
     @Binding var selection: Int
     
     // MARK: Data Owned by Me
-    @State private var didStartRevealing: Bool = false
+    @State private var isRevealed: Bool = false
     @State private var revealedCount: Int = 0
     
     init(code: Code,
@@ -65,10 +65,15 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
                     }
             }
             .onAppear {
-                    startRevealIfNeeded()
+                if shouldReveal {
+                    isRevealed = true
+                    revealedCount = code.pegs.count
+                }
             }
-            .onChange(of: shouldReveal) {
-                startRevealIfNeeded()
+            .onChange(of: shouldReveal) { oldValue, newValue in
+                if newValue && !oldValue && !isRevealed {
+                    startRevealIfNeeded()
+                }
             }
             Color.clear.aspectRatio(1, contentMode: .fit)
                 .overlay {
@@ -78,10 +83,11 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
     }
     
     func startRevealIfNeeded() -> () {
-        guard shouldReveal, !didStartRevealing else {return}
+        print("For \(code), shouldReveal: \(shouldReveal), isRevealed: \(isRevealed)")
+        guard shouldReveal, !isRevealed else {return}
         
         if case .attempt = code.kind {
-            didStartRevealing = true
+            isRevealed = true
             Task {
                 for index in code.pegs.indices {
                     print("Hit")

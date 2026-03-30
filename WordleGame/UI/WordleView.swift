@@ -52,7 +52,7 @@ struct WordleView: View {
                     }
                 }
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                    CodeView(code: game.attempts[index], shouldReveal: index == activeRevealIndex)
+                    CodeView(code: game.attempts[index], shouldReveal: index <= activeRevealIndex)
                         .transition(AnyTransition.asymmetric(
                             insertion: game.isOver ? .opacity : .move(edge: .top),
                             removal: .move(edge: .trailing))
@@ -63,6 +63,9 @@ struct WordleView: View {
                 keyboard
                     .transition(AnyTransition.keyboard)
             }
+        }
+        .onAppear {
+            activeRevealIndex = game.attempts.count - 1
         }
         .animation(Animation.bouncy, value: selection)
         .padding()
@@ -107,7 +110,7 @@ struct WordleView: View {
     
     func guess() {
         withAnimation(Animation.guess) {
-            print("current activeReveal index : ", activeRevealIndex)
+            print("WorldeView - current activeRevealIndex : ", activeRevealIndex)
             if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased()) {
                 selection = 0
                 game.attemptGuess()

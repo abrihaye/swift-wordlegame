@@ -23,7 +23,6 @@ struct PegView: View {
         ZStack {
               face(color: Color.gray(0.7))
                   .opacity(angle < 90 ? 1 : 0)
-
               face(color: MatchColor())
                   .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                   .opacity(angle >= 90 ? 1 : 0)
