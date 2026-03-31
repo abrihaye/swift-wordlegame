@@ -110,7 +110,6 @@ struct WordleView: View {
     
     func guess() {
         withAnimation(Animation.guess) {
-            print("WorldeView - current activeRevealIndex : ", activeRevealIndex)
             if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased()) {
                 selection = 0
                 game.attemptGuess()

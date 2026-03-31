@@ -12,8 +12,8 @@ struct GameSummary: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            let lastAttempt = game.attempts.last ?? Code(kind: .attempt([.exact, .exact, .exact, .exact]), "TEST")
-            CodeView(code: lastAttempt)
+            let lastAttempt = game.attempts.last ?? Code(kind: .attempt([.inexact, .exact, .inexact, .exact]), "TEST")
+            CodeView(code: lastAttempt, shouldReveal: true)
                 .frame(maxHeight: 50)
             Text("^[\(game.attempts.count) Attempt](inflect: true)")
         }

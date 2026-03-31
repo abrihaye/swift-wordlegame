@@ -25,8 +25,6 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
          ancillaryView: @escaping () -> AncillaryView = { EmptyView() },
          shouldReveal: Bool = false)
     {
-        print(code.kind)
-        print("Should Reveal : \(shouldReveal)")
         self.code = code
         self._selection = selection
         self.ancillaryView = ancillaryView
@@ -83,14 +81,12 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
     }
     
     func startRevealIfNeeded() -> () {
-        print("For \(code), shouldReveal: \(shouldReveal), isRevealed: \(isRevealed)")
         guard shouldReveal, !isRevealed else {return}
         
         if case .attempt = code.kind {
             isRevealed = true
             Task {
                 for index in code.pegs.indices {
-                    print("Hit")
                     withAnimation {
                         revealedCount = index + 1
                     }
