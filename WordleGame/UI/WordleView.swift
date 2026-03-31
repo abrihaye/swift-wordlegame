@@ -32,37 +32,32 @@ struct WordleView: View {
                 .onChange(of: words.count, initial: true) {
                     getMasterCodeFromWords()
                 }
-            CodeView(code: game.masterCode)
-                .transaction { transaction in
-                    if restarting {
-                        transaction.animation = nil
-                    }
-                }
-            ScrollView {
-                if !game.isOver || restarting {
-                    CodeView(code: game.guess, selection: $selection) {
-                        Button("Guess", action: guess).flexibleFontSystem()
-                    }
-                    .animation(nil, value: game.attempts.count)
-                    .opacity(restarting ? 0 : 1)
+                CodeView(code: game.masterCode)
                     .transaction { transaction in
                         if restarting {
                             transaction.animation = nil
                         }
                     }
+                ScrollView {
+                    if !game.isOver || restarting {
+                        CodeView(code: game.guess, selection: $selection) {
+                            Button("Guess", action: guess).flexibleFontSystem()
+                        }
+                        .animation(nil, value: game.attempts.count)
+                        .opacity(restarting ? 0 : 1)
+                    }
+                    ForEach(game.attempts.indices.reversed(), id: \.self) { index in
+                        CodeView(code: game.attempts[index], shouldReveal: index <= activeRevealIndex)
+                            .transition(AnyTransition.asymmetric(
+                                insertion: game.isOver ? .opacity : .move(edge: .top),
+                                removal: .move(edge: .trailing))
+                            )
+                    }
                 }
-                ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                    CodeView(code: game.attempts[index], shouldReveal: index <= activeRevealIndex)
-                        .transition(AnyTransition.asymmetric(
-                            insertion: game.isOver ? .opacity : .move(edge: .top),
-                            removal: .move(edge: .trailing))
-                        )
+                if !game.isOver {
+                    keyboard
+                        .transition(AnyTransition.keyboard)
                 }
-            }
-            if !game.isOver {
-                keyboard
-                    .transition(AnyTransition.keyboard)
-            }
         }
         .onAppear {
             activeRevealIndex = game.attempts.count - 1

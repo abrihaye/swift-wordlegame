@@ -21,6 +21,13 @@ struct GameChooser: View {
                         GameSummary(game: game)
                     }
                 }
+                .onDelete { offsets in
+                    print(offsets)
+                    games.remove(atOffsets: offsets)
+                }
+                .onMove {offsets, destination in
+                    games.move(fromOffsets: offsets, toOffset: destination)
+                }
             }
             .listStyle(.plain)
             .toolbar {
