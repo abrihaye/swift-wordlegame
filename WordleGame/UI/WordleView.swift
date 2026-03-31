@@ -32,6 +32,8 @@ struct WordleView: View {
                 .onChange(of: words.count, initial: true) {
                     getMasterCodeFromWords()
                 }
+            if !restarting {
+                // Not Restarting
                 CodeView(code: game.masterCode)
                     .transaction { transaction in
                         if restarting {
@@ -44,6 +46,12 @@ struct WordleView: View {
                             Button("Guess", action: guess).flexibleFontSystem()
                         }
                         .animation(nil, value: game.attempts.count)
+                        .transition(.opacity)
+                        .transaction { transaction in
+                            if restarting {
+                                transaction.animation = nil
+                            }
+                        }
                         .opacity(restarting ? 0 : 1)
                     }
                     ForEach(game.attempts.indices.reversed(), id: \.self) { index in
@@ -58,6 +66,23 @@ struct WordleView: View {
                     keyboard
                         .transition(AnyTransition.keyboard)
                 }
+            } else {
+                Menu("Actions") {
+                    Button("3") {
+                        print("3")
+                    }
+                    Button("4") {
+                        print("4")
+                    }
+                    Button("5") {
+                        print("5")
+                    }
+                    Button("6") {
+                        print("6")
+                    }
+                }
+                .menuStyle(MenuStyle.borderlessButton)
+            }
         }
         .onAppear {
             activeRevealIndex = game.attempts.count - 1
@@ -81,12 +106,13 @@ struct WordleView: View {
             withAnimation(.restart) {
                 restarting = true
                 activeRevealIndex = -1
-                game.reset(words: words)
-            } completion: {
-                withAnimation (.restart) {
-                    restarting = false
-                }
+//                game.reset(words: words)
             }
+//            } completion: {
+//                withAnimation (.restart) {
+//                    restarting = false
+//                }
+//            }
         }
     }
     
