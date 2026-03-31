@@ -33,10 +33,10 @@ class Wordle {
         self.attempts = attempts
     }
     
-    func reset(words: Words) {
-        attempts = []
-        pegKeys = [:]
-        masterCode = Code(kind: .master(isHidden: true), (words.random(length: Int.random(in: 3...6)) ?? "ERROR"))
+    func reset() {
+        attempts.removeAll()
+        pegKeys.removeAll()
+        masterCode = Code(kind: .master(isHidden: true), count: masterCode.pegs.count)
         guess = Code(kind: .guess, count: masterCode.pegs.count)
     }
     
@@ -58,7 +58,7 @@ class Wordle {
         }
     }
     
-    func updateMaster(masterCode: Code) {
+    func setMaster(masterCode: Code) {
         self.masterCode = masterCode
         guess = Code(kind: .guess, count: masterCode.pegs.count)
     }

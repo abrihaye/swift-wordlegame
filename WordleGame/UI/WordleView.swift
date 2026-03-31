@@ -22,17 +22,15 @@ struct WordleView: View {
     @State private var restarting = false
     @State private var checker = UITextChecker()
     @State private var activeRevealIndex: Int = -1
+    @State private var masterWordCount: Int?
     
     let pegChoices: [String] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
     
     // MARK: - Body
     var body: some View {
         VStack {
-            resetButton
-                .onChange(of: words.count, initial: true) {
-                    getMasterCodeFromWords()
-                }
             if !restarting {
+                resetButton
                 // Not Restarting
                 CodeView(code: game.masterCode)
                     .transaction { transaction in
@@ -41,7 +39,7 @@ struct WordleView: View {
                         }
                     }
                 ScrollView {
-                    if !game.isOver || restarting {
+                    if !game.isOver {
                         CodeView(code: game.guess, selection: $selection) {
                             Button("Guess", action: guess).flexibleFontSystem()
                         }
@@ -66,23 +64,33 @@ struct WordleView: View {
                     keyboard
                         .transition(AnyTransition.keyboard)
                 }
-            } else {
-                Menu("Actions") {
-                    Button("3") {
-                        print("3")
-                    }
-                    Button("4") {
-                        print("4")
-                    }
-                    Button("5") {
-                        print("5")
-                    }
-                    Button("6") {
-                        print("6")
-                    }
-                }
-                .menuStyle(MenuStyle.borderlessButton)
             }
+            else {
+                    HStack {
+                        Text("Word Length")
+                        TextField("Int between 3 and 6", value: $masterWordCount, format: .number)
+                            .textFieldStyle(.roundedBorder)
+                            .foregroundStyle(.primary)
+                            .onSubmit {
+                                if let masterWordCount {
+                                    guard masterWordCount >= 3, masterWordCount <= 6 else {
+                                        self.masterWordCount = nil
+                                        return
+                                    }
+                                    
+                                    let newCode = Code(kind: .master(isHidden: true), words.random(length: masterWordCount) ?? "AWAIT")
+                                    game.setMaster(masterCode: newCode)
+                                    
+                                    withAnimation(.restart) {
+                                        restarting = false
+                                    }
+                                }
+                            }
+                }
+            }
+        }
+        .onChange(of: words.count, initial: true) {
+            getMasterCodeFromWords()
         }
         .onAppear {
             activeRevealIndex = game.attempts.count - 1
@@ -106,17 +114,14 @@ struct WordleView: View {
             withAnimation(.restart) {
                 restarting = true
                 activeRevealIndex = -1
-//                game.reset(words: words)
+                selection = 0
+                game.reset()
             }
-//            } completion: {
-//                withAnimation (.restart) {
-//                    restarting = false
-//                }
-//            }
         }
     }
     
     func getMasterCodeFromWords() {
+        print("Hello There")
         var newMasterCode = Code(kind: .master(isHidden: true), "")
         if game.attempts.count == 0 {
             if words.count == 0 {
@@ -124,9 +129,8 @@ struct WordleView: View {
             } else {
                 newMasterCode.word = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
             }
-            game.updateMaster(masterCode: newMasterCode)
+            game.setMaster(masterCode: newMasterCode)
         }
-            
     }
     
     func guess() {
