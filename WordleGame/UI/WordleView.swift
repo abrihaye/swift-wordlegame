@@ -122,7 +122,6 @@ struct WordleView: View {
     }
     
     func getMasterCodeFromWords() {
-        print("Hello There")
         var newMasterCode = Code(kind: .master(isHidden: true), "")
         if game.attempts.count == 0 {
             if words.count == 0 {

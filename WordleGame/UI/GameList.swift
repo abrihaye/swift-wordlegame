@@ -37,11 +37,18 @@ struct GameList: View {
         .navigationTitle("Wordle Games")
         .listStyle(.plain)
         .toolbar {
-            Button("Add", systemImage: "plus") {
-                let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)))
-                games.append(newGame)
-            }
+            AddButton()
             EditButton()
+            Button("Settings", systemImage: "gear") {
+                print("Entering Settings")
+            }
+        }
+    }
+    
+    func AddButton() -> some View {
+        Button("Add", systemImage: "plus") {
+            let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)))
+            games.append(newGame)
         }
     }
     

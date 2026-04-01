@@ -24,6 +24,14 @@ struct GameChooser: View {
                 Text("Choose a game")
             }
         }
+        .onChange(of: selection?.attempts.count) {
+            if let selection {
+                if let index = games.firstIndex(of: selection) {
+                    games.remove(at: index)
+                    games.insert(selection, at: 0)
+                }
+            }
+        }
         .navigationSplitViewStyle(.balanced)
         .onAppear {
             addSampleGames()
