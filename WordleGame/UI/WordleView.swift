@@ -33,11 +33,7 @@ struct WordleView: View {
                 resetButton
                 // Not Restarting
                 CodeView(code: game.masterCode)
-                    .transaction { transaction in
-                        if restarting {
-                            transaction.animation = nil
-                        }
-                    }
+                    .transition(AnyTransition.asymmetric(insertion: .move(edge: .trailing), removal: .opacity))
                 ScrollView {
                     if !game.isOver {
                         CodeView(code: game.guess, selection: $selection) {
@@ -52,12 +48,15 @@ struct WordleView: View {
                         }
                         .opacity(restarting ? 0 : 1)
                     }
-                    ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                        CodeView(code: game.attempts[index], shouldReveal: index <= activeRevealIndex)
-                            .transition(AnyTransition.asymmetric(
-                                insertion: game.isOver ? .opacity : .move(edge: .top),
-                                removal: .move(edge: .trailing))
+                    ForEach(game.attempts.reversed(), id: \.pegs) { attempt in
+                        if let index = game.attempts.firstIndex(of: attempt) {
+                            CodeView(code: attempt, shouldReveal: index <= activeRevealIndex)
+                                .transition(AnyTransition.asymmetric(
+                                    insertion: game.isOver ? .opacity : .move(edge: .top),
+                                    removal: .move(edge: .trailing))
                             )
+                        }
+                        
                     }
                 }
                 if !game.isOver {
@@ -66,26 +65,26 @@ struct WordleView: View {
                 }
             }
             else {
-                    HStack {
-                        Text("Word Length")
-                        TextField("Int between 3 and 6", value: $masterWordCount, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .foregroundStyle(.primary)
-                            .onSubmit {
-                                if let masterWordCount {
-                                    guard masterWordCount >= 3, masterWordCount <= 6 else {
-                                        self.masterWordCount = nil
-                                        return
-                                    }
-                                    
-                                    let newCode = Code(kind: .master(isHidden: true), words.random(length: masterWordCount) ?? "AWAIT")
-                                    game.setMaster(masterCode: newCode)
-                                    
-                                    withAnimation(.restart) {
-                                        restarting = false
-                                    }
+                HStack {
+                    Text("Word Length")
+                    TextField("Int between 3 and 6", value: $masterWordCount, format: .number)
+                        .textFieldStyle(.roundedBorder)
+                        .foregroundStyle(.primary)
+                        .onSubmit {
+                            if let masterWordCount {
+                                guard masterWordCount >= 3, masterWordCount <= 6 else {
+                                    self.masterWordCount = nil
+                                    return
+                                }
+                                
+                                let newCode = Code(kind: .master(isHidden: true), words.random(length: masterWordCount) ?? "AWAIT")
+                                game.setMaster(masterCode: newCode)
+                                
+                                withAnimation(.restart) {
+                                    restarting = false
                                 }
                             }
+                        }
                 }
             }
         }
@@ -112,10 +111,13 @@ struct WordleView: View {
     var resetButton: some View {
         Button("Reset", systemImage: "arrow.circlepath") {
             withAnimation(.restart) {
-                restarting = true
                 activeRevealIndex = -1
                 selection = 0
                 game.reset()
+            } completion: {
+                withAnimation(.restart) {
+                    restarting = true
+                }
             }
         }
     }

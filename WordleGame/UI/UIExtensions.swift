@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Animation {
-    static let wordle = Animation.bouncy(duration: 3)
+    static let wordle = Animation.bouncy
     static let guess = Animation.wordle
     static let selection = Animation.wordle
     static let restart = Animation.wordle

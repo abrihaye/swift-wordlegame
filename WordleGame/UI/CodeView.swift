@@ -19,6 +19,7 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
     // MARK: Data Owned by Me
     @State private var isRevealed: Bool = false
     @State private var revealedCount: Int = 0
+    @Namespace private var selectionNamespace
     
     init(code: Code,
          selection: Binding<Int> = .constant(-1),
@@ -43,18 +44,19 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
                             if selection == index, code.kind == .guess {
                                 Selection.shape
                                     .foregroundStyle(Selection.color)
+                                    .matchedGeometryEffect(id: "selection", in: selectionNamespace)
                             }
                         }
                         .animation(Animation.selection, value: selection)
                     }
                     .overlay {
                         Selection.shape
-                            .foregroundStyle(code.isHidden ? Color.gray : .clear)
-                            .transaction { transaction in
-                                if code.isHidden {
-                                    transaction.animation = nil
-                                }
-                            }
+                            .foregroundStyle(code.isHidden ? Color.primary : .clear)
+//                            .transaction { transaction in
+//                                if code.isHidden {
+//                                    transaction.animation = nil
+//                                }
+//                            }
                     }
                     .onTapGesture {
                         if code.kind == .guess {
