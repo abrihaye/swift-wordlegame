@@ -31,7 +31,6 @@ struct WordleView: View {
         VStack {
             if !restarting {
                 resetButton
-                // Not Restarting
                 CodeView(code: game.masterCode)
                     .transition(AnyTransition.asymmetric(insertion: .move(edge: .trailing), removal: .opacity))
                 ScrollView {

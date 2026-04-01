@@ -10,33 +10,30 @@ import SwiftUI
 struct GameChooser: View {
     // MARK: Data OWNED by me
     @State private var games: [Wordle] = []
+    @State private var selection: Wordle? = nil
     
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(games, id : \.id) { game in
-                    NavigationLink {
-                        WordleView(game: game)
-                    } label : {
-                        GameSummary(game: game)
-                    }
-                }
-                .onDelete { offsets in
-                    print(offsets)
-                    games.remove(atOffsets: offsets)
-                }
-                .onMove {offsets, destination in
-                    games.move(fromOffsets: offsets, toOffset: destination)
-                }
-            }
-            .listStyle(.plain)
-            .toolbar {
-                EditButton()
+        NavigationSplitView(columnVisibility: .constant(.all)) {
+            GameList(selection: $selection, games: $games)
+                .navigationTitle("Wordle Games")
+        } detail: {
+            if let selection {
+                WordleView(game: selection)
+                    .navigationBarTitleDisplayMode(.inline)
+            } else {
+                Text("Choose a game")
             }
         }
+        .navigationSplitViewStyle(.balanced)
         .onAppear {
-            games.append(Wordle(masterCode: Code(kind: .master(isHidden: false), "HELLO")))
-            games.append(Wordle(masterCode: Code(kind: .master(isHidden: false), "BYE")))
+            addSampleGames()
+        }
+    }
+    
+    func addSampleGames() {
+        if games.isEmpty {
+            games.append(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")))
+            games.append(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE")))
         }
     }
 }
