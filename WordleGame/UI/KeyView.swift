@@ -10,6 +10,7 @@ import SwiftUI
 struct KeyView: View {
     // MARK: Data In
     @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @Environment(\.settings) var wordleSettings: SettingsSaver
     let key: Peg
     let state: Match?
     
@@ -17,7 +18,12 @@ struct KeyView: View {
     var action: ((String) -> Void)?
     
     // MARK: Data owned by Me
-    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray, .notTried: .primary]
+    var matchLUT: [Match: Color] {
+        [.exact: wordleSettings.exactColor,
+         .inexact: wordleSettings.inexactColor,
+         .nomatch: wordleSettings.nomatchColor,
+         .notTried: .primary]
+    }
     
     // MARK: - Body
     var body: some View {

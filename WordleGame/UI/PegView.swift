@@ -16,8 +16,13 @@ struct PegView: View {
     let pegShape = RoundedRectangle(cornerRadius: 10)
     
     @State private var angle: Double = 0
+    @Environment(\.settings) var wordleSettings
     
-    let matchLUT: [Match: Color] = [.exact: .green, .inexact: .orange, .nomatch: .gray]
+    var matchLUT: [Match: Color] {
+        [.exact: wordleSettings.exactColor,
+         .inexact: wordleSettings.inexactColor,
+         .nomatch: wordleSettings.nomatchColor]
+    }
     
     var body: some View {
         ZStack {

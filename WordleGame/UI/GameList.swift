@@ -11,6 +11,10 @@ struct GameList: View {
     @Binding var selection: Wordle?
     @Binding var games: [Wordle]
     
+    @State private var matchColorPicker: [Color] = [.green, .orange, .gray]
+    @State private var showSettings: Bool = false
+    @Environment(\.settings) var mySettings
+    
     var body: some View {
         List(selection: $selection) {
             ForEach(games) { game in
@@ -40,7 +44,28 @@ struct GameList: View {
             AddButton()
             EditButton()
             Button("Settings", systemImage: "gear") {
-                print("Entering Settings")
+                showSettings = true
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+            @Bindable var settings = mySettings
+            NavigationStack {
+                Form {
+                    Section("Match Color") {
+                        ColorPicker("Exact Match", selection: $settings.exactColor)
+                        ColorPicker("Inexact Match", selection: $settings.inexactColor)
+                        ColorPicker("No Match", selection: $settings.nomatchColor)
+                    }
+                }
+                Button("Reset to Default") {
+                    mySettings.setToDefaults()
+                }
+                .navigationTitle("Settings")
+                .toolbar {
+                    Button("Done", systemImage: "checkmark") {
+                        showSettings = false
+                    }
+                }
             }
         }
     }
@@ -59,7 +84,6 @@ struct GameList: View {
             }
         }
     }
-    
 }
 
 #Preview {
