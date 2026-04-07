@@ -6,29 +6,25 @@
 //
 
 import Foundation
+import SwiftData
 
 typealias Peg = String
 
-@Observable
-class Wordle {
-    var name: String
-    var masterCode: Code {
+@Model class Wordle {
+    @Relationship(deleteRule: .cascade) var masterCode: Code {
         didSet {
-            print(masterCode)
             guess = Code(kind: .guess, count: masterCode.pegs.count)
         }
     }
-    
-    var guess: Code = Code(kind: .guess)
-    var attempts: [Code] = []
+    @Relationship(deleteRule: .cascade) var guess: Code = Code(kind: .guess)
+    @Relationship(deleteRule: .cascade) var attempts: [Code] = []
     var pegKeys: [Peg : Match] = [:]
     
     var isOver: Bool {
             attempts.last?.pegs == masterCode.pegs
     }
     
-    init(name: String = "Wordle", masterCode: Code,  attempts: [Code] = []) {
-        self.name = name
+    init(masterCode: Code,  attempts: [Code] = []) {
         self.masterCode = masterCode
         self.attempts = attempts
     }
@@ -42,10 +38,9 @@ class Wordle {
     
     // Check if the word exists and has the correct size
     func attemptGuess() {
-        var attempt = guess
         let matches = guess.match(against: masterCode)
+        let attempt = Code(kind: .attempt(matches), guess.word)
         
-        attempt.kind = .attempt(matches)
         if !attempts.contains(attempt) {
             updatePegChoices(for: guess.pegs, matches: matches)
             attempts.append(attempt)
@@ -81,27 +76,6 @@ class Wordle {
                 pegKeys[pegs[index]] = matches[index]
             }
         }
-    }
-}
-
-extension Wordle: Identifiable, Hashable, Equatable {
-    static func == (lhs: Wordle, rhs: Wordle) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
-
-enum Match : Int, Comparable {
-    case notTried = 0
-    case nomatch = 1
-    case inexact = 2
-    case exact = 3
-    
-    static func < (lhs: Match, rhs: Match) -> Bool {
-        return lhs.rawValue < rhs.rawValue
     }
 }
 

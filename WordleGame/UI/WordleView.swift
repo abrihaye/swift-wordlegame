@@ -14,7 +14,7 @@ struct WordleView: View {
     
     // MARK: Data Shared with Me
     let game: Wordle
-    
+     
     // MARK: Data Owned by Me
     
     //@Binding var game: Wordle
@@ -122,7 +122,7 @@ struct WordleView: View {
     }
     
     func getMasterCodeFromWords() {
-        var newMasterCode = Code(kind: .master(isHidden: true), "")
+        let newMasterCode = Code(kind: .master(isHidden: true), "")
         if game.attempts.count == 0 {
             if words.count == 0 {
                 newMasterCode.word = "AWAIT"

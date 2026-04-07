@@ -7,19 +7,18 @@
 
 
 import Foundation
+import SwiftData
 
-struct Code : Equatable {
-    var kind: Kind
+@Model class Code {
+    var _kind: String = Kind.unknown.description
     var pegs: [Peg]
     
-    static let missingPeg: Peg = ""
-    
-    enum Kind: Equatable {
-        case master(isHidden: Bool)
-        case guess
-        case attempt([Match])
-        case unknown
+    var kind: Kind {
+        get { return Kind(_kind) }
+        set { _kind = newValue.description}
     }
+    
+    static let missingPeg: Peg = ""
     
     var isHidden: Bool {
         switch kind {
@@ -47,16 +46,17 @@ struct Code : Equatable {
         } else {
             finalKind = kind
         }
-        self.kind = finalKind
         self.pegs = word.map { String($0) }
+        self.kind = finalKind
     }
     
     init(kind: Kind, count: Int = 5) {
-        self.kind = kind
         self.pegs = Array(repeating: Code.missingPeg, count: count)
+        self.kind = kind
     }
     
-    mutating func reset() {
+    
+    func reset() {
         pegs = Array(repeating: Code.missingPeg, count: pegs.count)
     }
     
@@ -84,3 +84,23 @@ struct Code : Equatable {
         }
     }
 }
+
+enum Match : String, Comparable, Hashable, Codable {
+    case notTried
+    case nomatch
+    case inexact
+    case exact
+    
+    private var comparisonIndex: Int {
+        switch self {
+        case .notTried: return 0
+        case .nomatch: return 1
+        case .inexact: return 2
+        case .exact: return 3
+        }
+    }
+    static func < (lhs: Match, rhs: Match) -> Bool {
+        return lhs.comparisonIndex < rhs.comparisonIndex
+    }
+}
+
