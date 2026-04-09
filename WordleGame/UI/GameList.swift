@@ -9,14 +9,17 @@ import SwiftUI
 import SwiftData
 
 struct GameList: View {
-    @Environment(\.modelContext) private var context
+    // MARK: Data In
+    @Environment(\.modelContext) var modelContext
     
+    // MARK: Data Shared with Me
+    @Environment(\.settings) var mySettings
+    @Query var games: [Wordle]
     @Binding var selection: Wordle?
-    @Binding var games: [Wordle]
     
+    // MARK: Data Owned by Me
     @State private var matchColorPicker: [Color] = [.green, .orange, .gray]
     @State private var showSettings: Bool = false
-    @Environment(\.settings) var mySettings
     
     var body: some View {
         List(selection: $selection) {
@@ -29,11 +32,9 @@ struct GameList: View {
                 }
             }
             .onDelete { offsets in
-                print(offsets)
-                games.remove(atOffsets: offsets)
-            }
-            .onMove {offsets, destination in
-                games.move(fromOffsets: offsets, toOffset: destination)
+                for offset in offsets {
+                    modelContext.delete(games[offset])
+                }
             }
         }
         .onChange(of: games) {
@@ -44,11 +45,17 @@ struct GameList: View {
         .navigationTitle("Wordle Games")
         .listStyle(.plain)
         .toolbar {
-            AddButton()
+            addButton()
             EditButton()
-            Button("Settings", systemImage: "gear") {
-                showSettings = true
-            }
+            settingsButton
+            
+        }
+        .onAppear { addSampleGames() }
+    }
+    
+    var settingsButton: some View {
+        Button("Settings", systemImage: "gear") {
+            showSettings = true
         }
         .sheet(isPresented: $showSettings) {
             @Bindable var settings = mySettings
@@ -73,10 +80,10 @@ struct GameList: View {
         }
     }
     
-    func AddButton() -> some View {
+    func addButton() -> some View {
         Button("Add", systemImage: "plus") {
             let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)))
-            context.insert(newGame)
+            modelContext.insert(newGame)
         }
     }
     
@@ -87,9 +94,17 @@ struct GameList: View {
             }
         }
     }
+    
+    func addSampleGames() {
+        if games.isEmpty {
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")))
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE")))
+        }
+    }
+    
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var selection: Wordle?
     @Previewable @State var games: [Wordle] = [Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")),
                                                Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE"))]

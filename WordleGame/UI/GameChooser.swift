@@ -12,7 +12,6 @@ struct GameChooser: View {
     // MARK: Data OWNED by me
     @Environment(\.modelContext) private var context
     
-    @Query private var games: [Wordle] = []
     @State private var selection: Wordle? = nil
     
     var body: some View {
@@ -36,20 +35,10 @@ struct GameChooser: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .onAppear {
-            addSampleGames()
-        }
-    }
-    
-    func addSampleGames() {
-        if games.isEmpty {
-            context.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")))
-            context.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE")))
-        }
     }
 }
 
 
-#Preview(traits: .modifier(WordleDataPreview())) {
+#Preview(traits: .swiftData) {
     GameChooser()
 }

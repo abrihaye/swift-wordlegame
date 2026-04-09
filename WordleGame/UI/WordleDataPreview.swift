@@ -18,3 +18,7 @@ struct WordleDataPreview: PreviewModifier {
         content.modelContainer(context)
     }
 }
+
+extension PreviewTrait<Preview.ViewTraits> {
+    @MainActor static var swiftData: Self = .modifier(WordleDataPreview())
+}
