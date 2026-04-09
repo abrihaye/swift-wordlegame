@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameList: View {
+    @Environment(\.modelContext) private var context
+    
     @Binding var selection: Wordle?
     @Binding var games: [Wordle]
     
@@ -73,7 +76,7 @@ struct GameList: View {
     func AddButton() -> some View {
         Button("Add", systemImage: "plus") {
             let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)))
-            games.append(newGame)
+            context.insert(newGame)
         }
     }
     

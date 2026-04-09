@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameChooser: View {
     // MARK: Data OWNED by me
-    @State private var games: [Wordle] = []
+    @Environment(\.modelContext) private var context
+    
+    @Query private var games: [Wordle] = []
     @State private var selection: Wordle? = nil
     
     var body: some View {
@@ -40,12 +43,13 @@ struct GameChooser: View {
     
     func addSampleGames() {
         if games.isEmpty {
-            games.append(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")))
-            games.append(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE")))
+            context.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")))
+            context.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE")))
         }
     }
 }
 
-#Preview {
+
+#Preview(traits: .modifier(WordleDataPreview())) {
     GameChooser()
 }
