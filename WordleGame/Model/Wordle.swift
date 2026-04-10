@@ -21,6 +21,10 @@ typealias Peg = String
     var pegKeys: [Peg : Match] = [:]
     var timeLastAttempt: Date = Date.now
     
+    var startTime: Date = Date.now
+    var elapsedTime: TimeInterval = 0
+    var timerIsRunning: Bool = false
+    
     var isOver: Bool {
             attempts.last?.pegs == masterCode.pegs
     }

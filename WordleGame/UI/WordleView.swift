@@ -11,6 +11,7 @@ import SwiftUI
 struct WordleView: View {
     // MARK: Data IN
     @Environment(\.words) var words
+    @Environment(\.scenePhase) private var scenePhase
     
     // MARK: Data Shared with Me
     let game: Wordle
@@ -89,6 +90,9 @@ struct WordleView: View {
         }
         .onChange(of: words.count, initial: true) {
             getMasterCodeFromWords()
+        }
+        .onChange(of: scenePhase) {
+            game.timerRunning = (scenePhase == .active)
         }
         .onAppear {
             activeRevealIndex = game.attempts.count - 1
