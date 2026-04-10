@@ -9,7 +9,8 @@ import SwiftData
 
 struct WordleDataPreview: PreviewModifier {
     static func makeSharedContext() async throws -> Context {
-        let container = try ModelContainer(for: Wordle.self)
+        let container = try ModelContainer(for: Wordle.self,
+                                           configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         // Possible to add some data here
         return container
     }

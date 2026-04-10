@@ -15,6 +15,9 @@ struct GameSummary: View {
             Group {
                 if let lastAttempt = game.attempts.last {
                     CodeView(code: lastAttempt, shouldReveal: true)
+                        .transaction { transaction in
+                            transaction.animation = nil
+                        }
                 } else {
                     CodeView(code: Code(kind: .master(isHidden: true), count: game.masterCode.pegs.count))
                 }

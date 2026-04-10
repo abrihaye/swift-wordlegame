@@ -14,7 +14,7 @@ struct GameList: View {
     
     // MARK: Data Shared with Me
     @Environment(\.settings) var mySettings
-    @Query var games: [Wordle]
+    @Query(sort: \Wordle.timeLastAttempt, order: .reverse) var games: [Wordle]
     @Binding var selection: Wordle?
     
     // MARK: Data Owned by Me
@@ -45,7 +45,7 @@ struct GameList: View {
         .navigationTitle("Wordle Games")
         .listStyle(.plain)
         .toolbar {
-            addButton()
+            addButton
             EditButton()
             settingsButton
             
@@ -80,7 +80,7 @@ struct GameList: View {
         }
     }
     
-    func addButton() -> some View {
+    var addButton: some View {
         Button("Add", systemImage: "plus") {
             let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)))
             modelContext.insert(newGame)
@@ -90,13 +90,14 @@ struct GameList: View {
     func deleteButton(for game: Wordle) -> some View {
         Button("Delete", systemImage: "minus.circle", role: .destructive) {
             withAnimation {
-                games.removeAll {$0 == game}
+                modelContext.delete(game)
             }
         }
     }
     
     func addSampleGames() {
-        if games.isEmpty {
+        let fetchDescriptor = FetchDescriptor<Wordle>()
+        if let results = try? modelContext.fetchCount(fetchDescriptor), results == 0 {
             modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")))
             modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE")))
         }
@@ -106,7 +107,7 @@ struct GameList: View {
 
 #Preview(traits: .swiftData) {
     @Previewable @State var selection: Wordle?
-    @Previewable @State var games: [Wordle] = [Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")),
-                                               Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE"))]
-    GameList(selection: $selection, games: $games)
+    NavigationStack {
+        GameList(selection: $selection)
+    }
 }

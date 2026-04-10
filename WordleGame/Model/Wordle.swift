@@ -19,6 +19,7 @@ typealias Peg = String
     @Relationship(deleteRule: .cascade) var guess: Code = Code(kind: .guess)
     @Relationship(deleteRule: .cascade) var attempts: [Code] = []
     var pegKeys: [Peg : Match] = [:]
+    var timeLastAttempt: Date = Date.now
     
     var isOver: Bool {
             attempts.last?.pegs == masterCode.pegs
@@ -41,6 +42,8 @@ typealias Peg = String
         let matches = guess.match(against: masterCode)
         let attempt = Code(kind: .attempt(matches), guess.word)
         
+        // timestamp - Last attempt
+        timeLastAttempt = Date.now
         if !attempts.contains(attempt) {
             updatePegChoices(for: guess.pegs, matches: matches)
             attempts.append(attempt)

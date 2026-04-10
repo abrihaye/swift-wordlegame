@@ -16,7 +16,7 @@ struct GameChooser: View {
     
     var body: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
-            GameList(selection: $selection, games: $games)
+            GameList(selection: $selection)
                 .navigationTitle("Wordle Games")
         } detail: {
             if let selection {
@@ -24,14 +24,6 @@ struct GameChooser: View {
                     .navigationBarTitleDisplayMode(.inline)
             } else {
                 Text("Choose a game")
-            }
-        }
-        .onChange(of: selection?.attempts.count) {
-            if let selection {
-                if let index = games.firstIndex(of: selection) {
-                    games.remove(at: index)
-                    games.insert(selection, at: 0)
-                }
             }
         }
         .navigationSplitViewStyle(.balanced)
