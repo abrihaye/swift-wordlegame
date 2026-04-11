@@ -31,7 +31,6 @@ struct WordleView: View {
     var body: some View {
         VStack {
             if !restarting {
-                resetButton
                 CodeView(code: game.masterCode)
                     .transition(AnyTransition.asymmetric(insertion: .move(edge: .trailing), removal: .opacity))
                 ScrollView {
@@ -82,6 +81,7 @@ struct WordleView: View {
                                 
                                 withAnimation(.restart) {
                                     restarting = false
+                                    game.startTimer()
                                 }
                             }
                         }
@@ -91,11 +91,31 @@ struct WordleView: View {
         .onChange(of: words.count, initial: true) {
             getMasterCodeFromWords()
         }
-        .onChange(of: scenePhase) {
-            game.timerRunning = (scenePhase == .active)
-        }
         .onAppear {
             activeRevealIndex = game.attempts.count - 1
+            game.startTimer()
+        }
+        .onDisappear {
+            game.pauseTimer()
+        }
+        .onChange(of: scenePhase) {
+            switch scenePhase {
+            case .active: game.startTimer()
+            case .background: game.pauseTimer()
+            default: break
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                resetButton
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                ElapsedTimeView(startTime: game.startTime,
+                                endTime: game.endTime,
+                                elapsedTime: game.elapsedTime)
+                .monospaced(true)
+                .lineLimit(1)
+            }
         }
         .animation(Animation.bouncy, value: selection)
         .padding()

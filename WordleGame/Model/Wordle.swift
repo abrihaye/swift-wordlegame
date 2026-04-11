@@ -21,9 +21,9 @@ typealias Peg = String
     var pegKeys: [Peg : Match] = [:]
     var timeLastAttempt: Date = Date.now
     
-    var startTime: Date = Date.now
+    var startTime: Date? = Date.now
     var elapsedTime: TimeInterval = 0
-    var timerIsRunning: Bool = false
+    var endTime: Date?
     
     var isOver: Bool {
             attempts.last?.pegs == masterCode.pegs
@@ -39,6 +39,10 @@ typealias Peg = String
         pegKeys.removeAll()
         masterCode = Code(kind: .master(isHidden: true), count: masterCode.pegs.count)
         guess = Code(kind: .guess, count: masterCode.pegs.count)
+        
+        startTime = nil
+        endTime = nil
+        elapsedTime = 0
     }
     
     // Check if the word exists and has the correct size
@@ -82,6 +86,19 @@ typealias Peg = String
             if current < matches[index] {
                 pegKeys[pegs[index]] = matches[index]
             }
+        }
+    }
+    
+    func pauseTimer() {
+        if let startTime {
+            elapsedTime += Date.now.timeIntervalSince(startTime)
+        }
+        startTime = nil
+    }
+    
+    func startTimer() {
+        if startTime == nil, !isOver {
+            startTime = Date.now
         }
     }
 }
