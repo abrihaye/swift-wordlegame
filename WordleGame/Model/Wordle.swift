@@ -35,7 +35,7 @@ typealias Peg = String
             attempts.last?.pegs == masterCode.pegs
     }
     
-    init(masterCode: Code,  attempts: [Code] = [], language: String) {
+    init(masterCode: Code,  attempts: [Code] = [], language: String = "en_US") {
         self.masterCode = masterCode
         self.language = language
         self.attempts = attempts

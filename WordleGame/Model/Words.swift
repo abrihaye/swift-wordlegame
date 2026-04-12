@@ -23,7 +23,7 @@ enum Language: String {
         }
     }
     
-    var code: String? {
+    var code: String {
         switch self {
         case .english: return "en_US"
         case .french: return "fr_FR"

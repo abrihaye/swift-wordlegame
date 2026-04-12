@@ -160,7 +160,8 @@ struct WordleView: View {
     func guess() {
         withAnimation(Animation.guess) {
             if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased(),
-                                                              in: game.language) {
+                                                              in: game.language)
+            {
                 selection = 0
                 game.attemptGuess()
             }

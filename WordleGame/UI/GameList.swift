@@ -20,7 +20,6 @@ struct GameList: View {
     // MARK: Data Owned by Me
     @State private var matchColorPicker: [Color] = [.green, .orange, .gray]
     @State private var showSettings: Bool = false
-    @State private var language: String = "English"
     
     // Look into local
     var body: some View {
@@ -91,7 +90,7 @@ struct GameList: View {
     
     var addButton: some View {
         Button("Add", systemImage: "plus") {
-            let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)))
+            let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)), language: mySettings.language.code)
             modelContext.insert(newGame)
         }
     }
@@ -107,8 +106,8 @@ struct GameList: View {
     func addSampleGames() {
         let fetchDescriptor = FetchDescriptor<Wordle>()
         if let results = try? modelContext.fetchCount(fetchDescriptor), results == 0 {
-            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO")))
-            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE")))
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO"), language: mySettings.language.code))
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE"), language: mySettings.language.code))
         }
     }
     
