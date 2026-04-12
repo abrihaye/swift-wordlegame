@@ -73,8 +73,8 @@ struct GameList: View {
                     }
                     Section {
                         Picker("Language", selection: $settings.language) {
-                            Text("French").tag("French")
-                            Text("English").tag("English")
+                            Text("French").tag(Language.french)
+                            Text("English").tag(Language.english)
                         }
                     }
                 }

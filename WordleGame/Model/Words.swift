@@ -19,8 +19,14 @@ enum Language: String {
     var url: URL? {
         switch self {
         case .english: return URL(string: "https://web.stanford.edu/class/cs193p/common.words")
-        case .french: return URL(string: "https://raw.githubusercontent.com/Taknok/French-Wordlist/master/francais.txt")
-        default: return nil
+        case .french: return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/french_words.txt")
+        }
+    }
+    
+    var code: String? {
+        switch self {
+        case .english: return "en_US"
+        case .french: return "fr_FR"
         }
     }
 }
@@ -32,7 +38,7 @@ class Words {
     var language = Language.english
     
     static let shared =
-        Words(from: URL(string: "https://web.stanford.edu/class/cs193p/common.words"))
+        Words()
 
     private init() { }
     
@@ -43,6 +49,7 @@ class Words {
     func load(_ language: Language) {
         Task {
             var _words = [Int:Set<String>]()
+            let url = language.url
             if let url {
                 do {
                     for try await word in url.lines {
@@ -73,13 +80,13 @@ class Words {
 }
 
 extension UITextChecker {
-    func isAWord(_ word: String) -> Bool {
+    func isAWord(_ word: String, in language: String) -> Bool {
         rangeOfMisspelledWord(
             in: word,
             range: NSRange(location: 0, length: word.utf16.count),
             startingAt: 0,
             wrap: false,
-            language: "en_US"
+            language: language
         ).location == NSNotFound
     }
 }

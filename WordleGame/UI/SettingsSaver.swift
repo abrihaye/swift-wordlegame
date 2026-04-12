@@ -35,7 +35,7 @@ class SettingsSaver {
         }
     }
     
-    var language: String = "English" {
+    var language: Language = Language.english {
         didSet {
             saveLanguage(language)
         }
@@ -46,12 +46,12 @@ class SettingsSaver {
     init()
     {
         UserDefaults.standard.register(defaults: SettingsSaver.factoryDefaults)
-        UserDefaults.standard.register(defaults: ["language": "English"])
+        UserDefaults.standard.register(defaults: ["language": "english"])
         
         self.exactColor = hsboToColor((UserDefaults.standard.array(forKey: "exactColor") as? [Double])!)
         self.inexactColor = hsboToColor((UserDefaults.standard.array(forKey: "inexactColor") as? [Double])!)
         self.nomatchColor = hsboToColor((UserDefaults.standard.array(forKey: "nomatchColor") as? [Double])!)
-        self.language = UserDefaults.standard.string(forKey: "language") ?? "English"
+        self.language = Language(rawValue: UserDefaults.standard.string(forKey: "language") ?? "english") ?? Language.english
         
         Words.shared.load(self.language)
     }
@@ -68,8 +68,9 @@ class SettingsSaver {
         UserDefaults.standard.set(components, forKey: key)
     }
     
-    func saveLanguage(_ language: String) {
-        UserDefaults.standard.set(language, forKey: "language")
+    func saveLanguage(_ language: Language) {
+        UserDefaults.standard.set(language.rawValue, forKey: "language")
+        Words.shared.load(language)
     }
     
     func hsboToColor(_ hsbo: [Double]) -> Color {
