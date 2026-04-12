@@ -12,14 +12,35 @@ extension EnvironmentValues {
     @Entry var words = Words.shared
 }
 
+enum Language: String {
+    case english = "english"
+    case french = "french"
+    
+    var url: URL? {
+        switch self {
+        case .english: return URL(string: "https://web.stanford.edu/class/cs193p/common.words")
+        case .french: return URL(string: "https://raw.githubusercontent.com/Taknok/French-Wordlist/master/francais.txt")
+        default: return nil
+        }
+    }
+}
+
 @Observable
 class Words {
     private var words = Dictionary<Int, Set<String>>()
     
+    var language = Language.english
+    
     static let shared =
         Words(from: URL(string: "https://web.stanford.edu/class/cs193p/common.words"))
 
-    private init(from url: URL? = nil) {
+    private init() { }
+    
+    var count: Int {
+        words.values.reduce(0) { $0 + $1.count }
+    }
+    
+    func load(_ language: Language) {
         Task {
             var _words = [Int:Set<String>]()
             if let url {
@@ -36,10 +57,6 @@ class Words {
                 print("Words loaded \(count) words from \(url?.absoluteString ?? "nil")")
             }
         }
-    }
-    
-    var count: Int {
-        words.values.reduce(0) { $0 + $1.count }
     }
     
     func contains(_ word: String) -> Bool {

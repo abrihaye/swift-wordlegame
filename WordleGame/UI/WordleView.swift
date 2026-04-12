@@ -172,7 +172,7 @@ struct WordleView: View {
     
 }
 
-#Preview {
+#Preview(traits: .modifier(WordleDataPreview())) {
     @Previewable @State var game = Wordle(masterCode: Code(kind: .master(isHidden: false), "HELLO"))
     WordleView(game: game)
 }

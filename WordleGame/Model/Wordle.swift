@@ -17,7 +17,7 @@ typealias Peg = String
         }
     }
     @Relationship(deleteRule: .cascade) var guess: Code = Code(kind: .guess)
-    @Relationship(deleteRule: .cascade) var attempts: [Code] = []
+    @Relationship(deleteRule: .cascade) var _attempts: [Code] = []
     var pegKeys: [Peg : Match] = [:]
     var timeLastAttempt: Date = Date.now
     
@@ -25,6 +25,10 @@ typealias Peg = String
     var elapsedTime: TimeInterval = 0
     var endTime: Date?
     
+    var attempts: [Code] {
+        get {_attempts.sorted{ $0.timestamp > $1.timestamp}}
+        set {_attempts = newValue}
+    }
     var isOver: Bool {
             attempts.last?.pegs == masterCode.pegs
     }

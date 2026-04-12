@@ -20,7 +20,9 @@ struct GameList: View {
     // MARK: Data Owned by Me
     @State private var matchColorPicker: [Color] = [.green, .orange, .gray]
     @State private var showSettings: Bool = false
+    @State private var language: String = "English"
     
+    // Look into local
     var body: some View {
         List(selection: $selection) {
             ForEach(games) { game in
@@ -65,11 +67,18 @@ struct GameList: View {
                         ColorPicker("Exact Match", selection: $settings.exactColor)
                         ColorPicker("Inexact Match", selection: $settings.inexactColor)
                         ColorPicker("No Match", selection: $settings.nomatchColor)
+                        Button("Reset to Default") {
+                            mySettings.setToDefaults()
+                        }
+                    }
+                    Section {
+                        Picker("Language", selection: $settings.language) {
+                            Text("French").tag("French")
+                            Text("English").tag("English")
+                        }
                     }
                 }
-                Button("Reset to Default") {
-                    mySettings.setToDefaults()
-                }
+                
                 .navigationTitle("Settings")
                 .toolbar {
                     Button("Done", systemImage: "checkmark") {
