@@ -7,15 +7,13 @@
 
 import SwiftUI
 
-struct Shake: GeometryEffect {
+struct ShakeEffect: GeometryEffect {
+    var amount: CGFloat = 10
     var position: CGFloat = 2
-    var animatableData: CGFloat {
-        get {position}
-        set {position = newValue}
-    }
+    var animatableData: CGFloat
     
     func effectValue(size: CGSize) -> ProjectionTransform {
-        return ProjectionTransform(CGAffineTransform(translationX: -30 * sin(position * 4 * .pi), y: 0.0))
+        return ProjectionTransform(CGAffineTransform(translationX: amount * sin(animatableData * 4 * .pi), y: 0.0))
     }
 }
 

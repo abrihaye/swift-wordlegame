@@ -25,6 +25,8 @@ struct WordleView: View {
     @State private var activeRevealIndex: Int = -1
     @State private var masterWordCount: Int?
     
+    @State private var attemptFailed: Int = 0
+    
     let pegChoices: [String] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
     
     // MARK: - Body
@@ -38,6 +40,7 @@ struct WordleView: View {
                         CodeView(code: game.guess, selection: $selection) {
                             Button("Guess", action: guess).flexibleFontSystem()
                         }
+                        .modifier(ShakeEffect(animatableData: CGFloat(attemptFailed)))
                         .animation(nil, value: game.attempts.count)
                         .transition(.opacity)
                         .transaction { transaction in
@@ -175,18 +178,25 @@ struct WordleView: View {
     }
     
     func guess() {
-        withAnimation(Animation.guess) {
-            if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased(), in: game.languageCode)
-            {
+        if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased(), in: game.languageCode)
+        {
+            withAnimation(Animation.guess) {
                 selection = 0
                 game.attemptGuess()
+            } completion : {
+                withAnimation {
+                    activeRevealIndex = game.attempts.count - 1
+                }
             }
-        } completion: {
-            withAnimation {
-                activeRevealIndex = game.attempts.count - 1
+        } else {
+            withAnimation(.default) {
+                attemptFailed = 1
+            } completion: {
+                attemptFailed = 0
             }
         }
     }
+            
     
 }
 

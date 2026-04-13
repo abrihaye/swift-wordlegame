@@ -20,21 +20,43 @@ struct GameList: View {
     // MARK: Data Owned by Me
     @State private var matchColorPicker: [Color] = [.green, .orange, .gray]
     @State private var showSettings: Bool = false
-//    
-//    init(sortBy: SortOption, selection: Binding<Wordle?>) {
-//
-//    }
+    
+    init(sortBy: SortOption = .recent, search: String = "", selection: Binding<Wordle?>) {
+        _selection = selection
+        let predicate = buildPredicateForSort(sort: sortBy, for: search)
+        _games = Query(filter: predicate, sort: \.timeLastAttempt, order: .reverse)
+    }
+    
+    func buildPredicateForSort(sort: SortOption, for search: String) -> Predicate<Wordle> {
+        let capitalizedSearch = search.capitalized
+            
+        // We handle the branching logic OUTSIDE the macro
+        switch sort {
+        case .completed:
+            return #Predicate<Wordle> { game in
+                game.isOver && (capitalizedSearch.isEmpty || game._attempts.contains { $0.word.contains(capitalizedSearch) })
+            }
+        case .notcompleted:
+            return #Predicate<Wordle> { game in
+                !game.isOver && (capitalizedSearch.isEmpty || game._attempts.contains { $0.word.contains(capitalizedSearch) })
+            }
+        case .recent:
+            return #Predicate<Wordle> { game in
+                capitalizedSearch.isEmpty || game._attempts.contains { $0.word.contains(capitalizedSearch) }
+            }
+        }
+    }
     
     enum SortOption: CaseIterable {
-        case name
         case recent
-        case language
+        case completed
+        case notcompleted
         
         var title: String {
             switch self {
-            case .name: "Sort by Name"
-            case .recent: "Recent"
-            case .language: "Language"
+            case .recent: "Sort by Recent"
+            case .completed: "Completed"
+            case .notcompleted: "Not Completed"
             }
         }
     }

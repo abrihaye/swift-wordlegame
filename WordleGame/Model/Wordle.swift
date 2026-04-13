@@ -18,6 +18,7 @@ typealias Peg = String
     }
     @Relationship(deleteRule: .cascade) var guess: Code = Code(kind: .guess)
     @Relationship(deleteRule: .cascade) var _attempts: [Code] = []
+    var isOver = false
     var languageCode: String
     
     var pegKeys: [Peg : Match] = [:]
@@ -30,9 +31,6 @@ typealias Peg = String
     var attempts: [Code] {
         get {_attempts.sorted{ $1.timestamp > $0.timestamp}}
         set {_attempts = newValue}
-    }
-    var isOver: Bool {
-            attempts.last?.pegs == masterCode.pegs
     }
     
     init(masterCode: Code,  attempts: [Code] = [], languageCode language: String = "en_US") {
@@ -66,7 +64,8 @@ typealias Peg = String
             
             guess.reset()
             
-            if isOver {
+            if attempt.pegs == masterCode.pegs {
+                isOver = true
                 masterCode.kind = .master(isHidden: false)
             }
         }
