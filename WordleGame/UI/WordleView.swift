@@ -76,9 +76,7 @@ struct WordleView: View {
                                     return
                                 }
                                 
-                                let newCode = Code(kind: .master(isHidden: true), words.random(length: masterWordCount) ?? "AWAIT")
-                                game.setMaster(masterCode: newCode)
-                                
+                                setMasterFromWords(masterWordCount)
                                 withAnimation(.restart) {
                                     restarting = false
                                     game.startTimer()
@@ -89,7 +87,7 @@ struct WordleView: View {
             }
         }
         .onChange(of: words.count, initial: true) {
-            getMasterCodeFromWords()
+            setMasterFromWords()
         }
         .onAppear {
             activeRevealIndex = game.attempts.count - 1
@@ -105,7 +103,11 @@ struct WordleView: View {
             default: break
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("\(game.languageCode)")
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 resetButton
             }
@@ -136,6 +138,7 @@ struct WordleView: View {
             withAnimation(.restart) {
                 activeRevealIndex = -1
                 selection = 0
+                game.languageCode = words.language.code
                 game.reset()
             } completion: {
                 withAnimation(.restart) {
@@ -145,22 +148,35 @@ struct WordleView: View {
         }
     }
     
-    func getMasterCodeFromWords() {
-        let newMasterCode = Code(kind: .master(isHidden: true), "")
-        if game.attempts.count == 0 {
-            if words.count == 0 {
-                newMasterCode.word = "AWAIT"
-            } else {
-                newMasterCode.word = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
+    func setMasterFromWords(_ count: Int? = nil) {
+        let currentWord = game.masterCode.word
+        
+        print(words.language.code, game.languageCode)
+        if words.language.code == game.languageCode {
+            if currentWord.isEmpty || currentWord == "AWAIT" {
+                let newMasterCode = Code(kind: .master(isHidden: true), "")
+                if game.attempts.count == 0 {
+                    if words.count == 0 {
+                        newMasterCode.word = "AWAIT"
+                    } else {
+                        if let count {
+                            newMasterCode.word = words.random(length: count) ?? "ERROR"
+                        } else {
+                            newMasterCode.word = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
+                        }
+                        
+                    }
+                    game.setMaster(masterCode: newMasterCode)
+                }
             }
-            game.setMaster(masterCode: newMasterCode)
+        } else {
+            print("Not the same language")
         }
     }
     
     func guess() {
         withAnimation(Animation.guess) {
-            if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased(),
-                                                              in: game.language)
+            if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased(), in: game.languageCode)
             {
                 selection = 0
                 game.attemptGuess()
@@ -176,5 +192,7 @@ struct WordleView: View {
 
 #Preview(traits: .modifier(WordleDataPreview())) {
     @Previewable @State var game = Wordle(masterCode: Code(kind: .master(isHidden: false), "HELLO"))
-    WordleView(game: game)
+    NavigationStack {
+        WordleView(game: game)
+    }
 }

@@ -47,6 +47,7 @@ class Words {
     }
     
     func load(_ language: Language) {
+        self.language = language
         Task {
             var _words = [Int:Set<String>]()
             let url = language.url

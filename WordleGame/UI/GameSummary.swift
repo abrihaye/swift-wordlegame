@@ -28,7 +28,7 @@ struct GameSummary: View {
     }
 }
 
-#Preview {
+#Preview(traits: .modifier(WordleDataPreview())) {
     List {
         GameSummary(game: Wordle(masterCode: Code(kind: .master(isHidden: false), "HELLO"),
                                  attempts: [Code(kind : .attempt([.exact, .exact, .exact, .exact]), "BANNED")]))

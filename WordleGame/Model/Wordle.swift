@@ -18,7 +18,7 @@ typealias Peg = String
     }
     @Relationship(deleteRule: .cascade) var guess: Code = Code(kind: .guess)
     @Relationship(deleteRule: .cascade) var _attempts: [Code] = []
-    var language: String
+    var languageCode: String
     
     var pegKeys: [Peg : Match] = [:]
     var timeLastAttempt: Date = Date.now
@@ -35,9 +35,10 @@ typealias Peg = String
             attempts.last?.pegs == masterCode.pegs
     }
     
-    init(masterCode: Code,  attempts: [Code] = [], language: String = "en_US") {
+    init(masterCode: Code,  attempts: [Code] = [], languageCode language: String = "en_US") {
+        print(masterCode.word)
         self.masterCode = masterCode
-        self.language = language
+        self.languageCode = language
         self.attempts = attempts
     }
     
@@ -73,6 +74,7 @@ typealias Peg = String
     
     func setMaster(masterCode: Code) {
         self.masterCode = masterCode
+        print(masterCode.word)
         guess = Code(kind: .guess, count: masterCode.pegs.count)
     }
     

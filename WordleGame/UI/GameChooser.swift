@@ -11,11 +11,17 @@ import SwiftData
 struct GameChooser: View {
     // MARK: Data OWNED by me
     @Environment(\.modelContext) private var context
-    
     @State private var selection: Wordle? = nil
-    
+    @State private var sortOption: GameList.SortOption = .recent
     var body: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
+            Picker("Sort By", selection: $sortOption) {
+                ForEach(GameList.SortOption.allCases, id: \.self) { option in
+                    Text(option.title)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
             GameList(selection: $selection)
                 .navigationTitle("Wordle Games")
         } detail: {

@@ -20,6 +20,24 @@ struct GameList: View {
     // MARK: Data Owned by Me
     @State private var matchColorPicker: [Color] = [.green, .orange, .gray]
     @State private var showSettings: Bool = false
+//    
+//    init(sortBy: SortOption, selection: Binding<Wordle?>) {
+//
+//    }
+    
+    enum SortOption: CaseIterable {
+        case name
+        case recent
+        case language
+        
+        var title: String {
+            switch self {
+            case .name: "Sort by Name"
+            case .recent: "Recent"
+            case .language: "Language"
+            }
+        }
+    }
     
     // Look into local
     var body: some View {
@@ -90,7 +108,7 @@ struct GameList: View {
     
     var addButton: some View {
         Button("Add", systemImage: "plus") {
-            let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)), language: mySettings.language.code)
+            let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)), languageCode: mySettings.language.code)
             modelContext.insert(newGame)
         }
     }
@@ -106,8 +124,8 @@ struct GameList: View {
     func addSampleGames() {
         let fetchDescriptor = FetchDescriptor<Wordle>()
         if let results = try? modelContext.fetchCount(fetchDescriptor), results == 0 {
-            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "HELLO"), language: mySettings.language.code))
-            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true), "BYE"), language: mySettings.language.code))
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true)), languageCode: mySettings.language.code))
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true)), languageCode: mySettings.language.code))
         }
     }
     
