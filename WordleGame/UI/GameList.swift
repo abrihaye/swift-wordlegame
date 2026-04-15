@@ -14,7 +14,7 @@ struct GameList: View {
     
     // MARK: Data Shared with Me
     @Environment(\.settings) var mySettings
-    @Query(sort: \Wordle.timeLastAttempt, order: .reverse) var games: [Wordle]
+    @Query private var games: [Wordle]
     @Binding var selection: Wordle?
     
     // MARK: Data Owned by Me
@@ -23,27 +23,19 @@ struct GameList: View {
     
     init(sortBy: SortOption = .recent, search: String = "", selection: Binding<Wordle?>) {
         _selection = selection
-        let predicate = buildPredicateForSort(sort: sortBy, for: search)
-        _games = Query(filter: predicate, sort: \.timeLastAttempt, order: .reverse)
-    }
-    
-    func buildPredicateForSort(sort: SortOption, for search: String) -> Predicate<Wordle> {
-        let capitalizedSearch = search.capitalized
-            
-        // We handle the branching logic OUTSIDE the macro
-        switch sort {
-        case .completed:
-            return #Predicate<Wordle> { game in
-                game.isOver && (capitalizedSearch.isEmpty || game._attempts.contains { $0.word.contains(capitalizedSearch) })
-            }
-        case .notcompleted:
-            return #Predicate<Wordle> { game in
-                !game.isOver && (capitalizedSearch.isEmpty || game._attempts.contains { $0.word.contains(capitalizedSearch) })
-            }
-        case .recent:
-            return #Predicate<Wordle> { game in
-                capitalizedSearch.isEmpty || game._attempts.contains { $0.word.contains(capitalizedSearch) }
-            }
+        let completedOnly = sortBy == .completed
+        let notCompletedOnly = sortBy == .notcompleted
+        let searchUpper = search.uppercased()
+        
+        let predicate = #Predicate<Wordle> { game in
+            (!completedOnly || game.isOver)
+            && (!notCompletedOnly || !game.isOver)
+            && (search.isEmpty || game._attempts.contains { $0._pegs.contains(searchUpper) })
+        }
+        
+        switch sortBy {
+        case .completed, .recent, .notcompleted:
+            _games = Query(filter: predicate, sort: \.timeLastAttempt, order: .reverse)
         }
     }
     

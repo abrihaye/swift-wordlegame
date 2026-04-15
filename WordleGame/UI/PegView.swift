@@ -58,7 +58,7 @@ struct PegView: View {
             .contentShape(pegShape)
             .aspectRatio(1, contentMode: .fit)
             .overlay {
-                Text(peg)
+                Text(peg == "_" ? "" : peg )
                     .foregroundStyle(Color.primary)
                     .font(.system(size: 30))
                     .minimumScaleFactor(0.1)

@@ -33,7 +33,7 @@ struct KeyView: View {
                 Button {
                     action?(key)
                 } label: {
-                    Text(key)
+                    Text(key == "_" ? "" : key)
                         .foregroundStyle(Color.keyboardText(for: colorScheme))
                         .flexibleFontSystem()
                 }

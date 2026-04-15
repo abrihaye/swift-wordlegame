@@ -11,7 +11,7 @@ import SwiftData
 
 @Model class Code {
     var _kind: String = Kind.unknown.description
-    var pegs: [Peg]
+    var _pegs: String
     var timestamp: Date = Date.now
     
     var kind: Kind {
@@ -19,7 +19,16 @@ import SwiftData
         set { _kind = newValue.description}
     }
     
-    static let missingPeg: Peg = ""
+    static let missingPeg: Peg = "_"
+    
+    var pegs: [String] {
+        get {
+            _pegs.map {String($0)}
+        }
+        set {
+            _pegs = newValue.joined()
+        }
+    }
     
     var isHidden: Bool {
         switch kind {
@@ -35,11 +44,6 @@ import SwiftData
         }
     }
     
-    var word: String {
-        get { pegs.joined() }
-        set { pegs = newValue.map{String($0)} }
-    }
-    
     init(kind: Kind, _ word: String) {
         var finalKind: Kind
         if case .attempt(let matches) = kind, word.count != matches.count {
@@ -47,12 +51,12 @@ import SwiftData
         } else {
             finalKind = kind
         }
-        self.pegs = word.map { String($0) }
+        self._pegs = word
         self.kind = finalKind
     }
     
     init(kind: Kind, count: Int = 5) {
-        self.pegs = Array(repeating: Code.missingPeg, count: count)
+        self._pegs = String(repeating: Self.missingPeg, count: count)
         self.kind = kind
     }
     

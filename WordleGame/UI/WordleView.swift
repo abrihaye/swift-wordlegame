@@ -152,20 +152,20 @@ struct WordleView: View {
     }
     
     func setMasterFromWords(_ count: Int? = nil) {
-        let currentWord = game.masterCode.word
+        let currentWord = game.masterCode._pegs
         
         print(words.language.code, game.languageCode)
         if words.language.code == game.languageCode {
-            if currentWord.isEmpty || currentWord == "AWAIT" {
+            if currentWord == "_____" || currentWord == "AWAIT" {
                 let newMasterCode = Code(kind: .master(isHidden: true), "")
                 if game.attempts.count == 0 {
                     if words.count == 0 {
-                        newMasterCode.word = "AWAIT"
+                        newMasterCode._pegs = "AWAIT"
                     } else {
                         if let count {
-                            newMasterCode.word = words.random(length: count) ?? "ERROR"
+                            newMasterCode._pegs = words.random(length: count) ?? "ERROR"
                         } else {
-                            newMasterCode.word = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
+                            newMasterCode._pegs = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
                         }
                         
                     }
@@ -178,7 +178,7 @@ struct WordleView: View {
     }
     
     func guess() {
-        if !game.guess.pegs.contains(""), checker.isAWord(game.guess.word.lowercased(), in: game.languageCode)
+        if !game.guess.pegs.contains(Code.missingPeg), checker.isAWord(game.guess._pegs.lowercased(), in: game.languageCode)
         {
             withAnimation(Animation.guess) {
                 selection = 0

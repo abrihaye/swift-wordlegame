@@ -24,7 +24,7 @@ struct GameChooser: View {
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
-            GameList(selection: $selection)
+            GameList(sortBy: sortOption, search: search, selection: $selection)
                 .navigationTitle("Wordle Games")
                 .searchable(text: $search)
         } detail: {

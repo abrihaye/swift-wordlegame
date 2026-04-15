@@ -34,7 +34,6 @@ typealias Peg = String
     }
     
     init(masterCode: Code,  attempts: [Code] = [], languageCode language: String = "en_US") {
-        print(masterCode.word)
         self.masterCode = masterCode
         self.languageCode = language
         self.attempts = attempts
@@ -51,29 +50,28 @@ typealias Peg = String
         elapsedTime = 0
     }
     
-    // Check if the word exists and has the correct size
     func attemptGuess() {
+        guard !attempts.contains(where: {$0.pegs == guess.pegs}) else { return }
         let matches = guess.match(against: masterCode)
-        let attempt = Code(kind: .attempt(matches), guess.word)
-        
-        // timestamp - Last attempt
+        let attempt = Code(kind: .attempt(matches), guess._pegs)
+    
+        print(attempt.matches)
+        attempts.append(attempt)
         timeLastAttempt = Date.now
-        if !attempts.contains(attempt) {
-            updatePegChoices(for: guess.pegs, matches: matches)
-            attempts.append(attempt)
-            
-            guess.reset()
-            
-            if attempt.pegs == masterCode.pegs {
-                isOver = true
-                masterCode.kind = .master(isHidden: false)
-            }
+        updatePegChoices(for: guess.pegs, matches: matches)
+        
+        guess.reset()
+        
+        if attempt.pegs == masterCode.pegs {
+            isOver = true
+            pauseTimer()
+            masterCode.kind = .master(isHidden: false)
         }
     }
     
     func setMaster(masterCode: Code) {
         self.masterCode = masterCode
-        print(masterCode.word)
+        print(masterCode._pegs)
         guess = Code(kind: .guess, count: masterCode.pegs.count)
     }
     
