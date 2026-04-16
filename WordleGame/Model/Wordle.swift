@@ -55,7 +55,7 @@ typealias Peg = String
         let matches = guess.match(against: masterCode)
         let attempt = Code(kind: .attempt(matches), guess._pegs)
     
-        print(attempt.matches)
+        print(attempt.matches ?? "No Matches")
         attempts.append(attempt)
         timeLastAttempt = Date.now
         updatePegChoices(for: guess.pegs, matches: matches)
