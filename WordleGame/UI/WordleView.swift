@@ -156,7 +156,7 @@ struct WordleView: View {
         
         print(words.language.code, game.languageCode)
         if words.language.code == game.languageCode {
-            if currentWord == "_____" || currentWord == "AWAIT" {
+            if currentWord.contains("_") || currentWord == "AWAIT" {
                 let newMasterCode = Code(kind: .master(isHidden: true), "")
                 if game.attempts.count == 0 {
                     if words.count == 0 {
@@ -167,8 +167,8 @@ struct WordleView: View {
                         } else {
                             newMasterCode._pegs = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
                         }
-                        
                     }
+                    print(newMasterCode)
                     game.setMaster(masterCode: newMasterCode)
                 }
             }

@@ -109,7 +109,6 @@ struct GameList: View {
                         }
                     }
                 }
-                
                 .navigationTitle("Settings")
                 .toolbar {
                     Button("Done", systemImage: "checkmark") {
