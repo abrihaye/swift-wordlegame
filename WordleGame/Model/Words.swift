@@ -16,10 +16,21 @@ enum Language: String {
     case english = "english"
     case french = "french"
     
-    var url: URL? {
+    var solutionURL: URL? {
         switch self {
-        case .english: return URL(string: "https://web.stanford.edu/class/cs193p/common.words")
-        case .french: return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/french_words.txt")
+        case .english:
+            return URL(string: "https://web.stanford.edu/class/cs193p/common.words")
+        case .french:
+            return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/solutions_fr.txt")
+        }
+    }
+    
+    var validationURL: URL? {
+        switch self {
+        case .english:
+            return URL(string: "https://web.stanford.edu/class/cs193p/common.words")
+        case .french:
+            return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/dictionary_fr.txt")
         }
     }
     
@@ -50,7 +61,7 @@ class Words {
         self.language = language
         Task {
             var _words = [Int:Set<String>]()
-            let url = language.url
+            let url = language.solutionURL
             if let url {
                 do {
                     for try await word in url.lines {
