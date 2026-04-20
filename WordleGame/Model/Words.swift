@@ -19,7 +19,7 @@ enum Language: String {
     var solutionURL: URL? {
         switch self {
         case .english:
-            return URL(string: "https://web.stanford.edu/class/cs193p/common.words")
+            return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/solutions_en.txt")
         case .french:
             return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/solutions_fr.txt")
         }
@@ -28,7 +28,7 @@ enum Language: String {
     var validationURL: URL? {
         switch self {
         case .english:
-            return URL(string: "https://web.stanford.edu/class/cs193p/common.words")
+            return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/dictionary_en.txt")
         case .french:
             return URL(string: "https://raw.githubusercontent.com/abrihaye/swift-wordlegame/refs/heads/main/Resources/dictionary_fr.txt")
         }
@@ -40,6 +40,12 @@ enum Language: String {
         case .french: return "fr_FR"
         }
     }
+}
+
+struct LanguageWords {
+    let code: String = ""
+    let solutions: [String] = []
+    let validation: Dictionary<Int, Set<String>> = [:]
 }
 
 @Observable
