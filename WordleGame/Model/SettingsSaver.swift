@@ -52,8 +52,6 @@ class SettingsSaver {
         self.inexactColor = hsboToColor((UserDefaults.standard.array(forKey: "inexactColor") as? [Double])!)
         self.nomatchColor = hsboToColor((UserDefaults.standard.array(forKey: "nomatchColor") as? [Double])!)
         self.language = Language(rawValue: UserDefaults.standard.string(forKey: "language") ?? "english") ?? Language.english
-        
-        Words.shared.load(self.language)
     }
     
     func saveColorToDefaults(_ color: Color, key: String) {
@@ -70,7 +68,6 @@ class SettingsSaver {
     
     func saveLanguage(_ language: Language) {
         UserDefaults.standard.set(language.rawValue, forKey: "language")
-        Words.shared.load(language)
     }
     
     func hsboToColor(_ hsbo: [Double]) -> Color {
