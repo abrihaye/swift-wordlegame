@@ -121,7 +121,7 @@ struct GameList: View {
     
     var addButton: some View {
         Button("Add", systemImage: "plus") {
-            let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)), languageCode: mySettings.language.code)
+            let newGame = Wordle(masterCode: Code(kind: .master(isHidden: true)), language: mySettings.language)
             modelContext.insert(newGame)
         }
     }
@@ -137,8 +137,8 @@ struct GameList: View {
     func addSampleGames() {
         let fetchDescriptor = FetchDescriptor<Wordle>()
         if let results = try? modelContext.fetchCount(fetchDescriptor), results == 0 {
-            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true)), languageCode: mySettings.language.code))
-            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true)), languageCode: mySettings.language.code))
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true)), language: mySettings.language))
+            modelContext.insert(Wordle(masterCode: Code(kind: .master(isHidden: true)), language: mySettings.language))
         }
     }
     

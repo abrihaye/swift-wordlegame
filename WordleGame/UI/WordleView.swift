@@ -15,7 +15,7 @@ struct WordleView: View {
     
     // MARK: Data Shared with Me
     let game: Wordle
-     
+    
     // MARK: Data Owned by Me
     
     //@Binding var game: Wordle
@@ -56,7 +56,7 @@ struct WordleView: View {
                                 .transition(AnyTransition.asymmetric(
                                     insertion: game.isOver ? .opacity : .move(edge: .top),
                                     removal: .move(edge: .trailing))
-                            )
+                                )
                         }
                         
                     }
@@ -109,7 +109,7 @@ struct WordleView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text("\(game.languageCode)")
+                Text("\(game.language.code)")
             }
             ToolbarItem(placement: .topBarTrailing) {
                 resetButton
@@ -125,7 +125,7 @@ struct WordleView: View {
         .animation(Animation.bouncy, value: selection)
         .padding()
     }
-        
+    
     var keyboard: some View {
         KeyboardChooser(for: pegChoices, dict: game.pegKeys) { peg in
             game.setGuessPeg(peg, at: selection)
@@ -141,7 +141,6 @@ struct WordleView: View {
             withAnimation(.restart) {
                 activeRevealIndex = -1
                 selection = 0
-                game.languageCode = words.language.code
                 game.reset()
             } completion: {
                 withAnimation(.restart) {
@@ -154,31 +153,31 @@ struct WordleView: View {
     func setMasterFromWords(_ count: Int? = nil) {
         let currentWord = game.masterCode._pegs
         
-        print(words.language.code, game.languageCode)
-        if words.language.code == game.languageCode {
-            if currentWord.contains("_") || currentWord == "AWAIT" {
-                let newMasterCode = Code(kind: .master(isHidden: true), "")
-                if game.attempts.count == 0 {
-                    if words.count == 0 {
-                        newMasterCode._pegs = "AWAIT"
+        print(words.language.code, game.language)
+        if currentWord.contains("_") || currentWord == "AWAIT" {
+            let newMasterCode = Code(kind: .master(isHidden: true), "")
+            if game.attempts.count == 0 {
+                if words.count == 0 {
+                    newMasterCode._pegs = "AWAIT"
+                } else {
+                    if let count {
+                        newMasterCode._pegs = words.random(length: count, in: game.language) ?? "ERROR"
                     } else {
-                        if let count {
-                            newMasterCode._pegs = words.random(length: count) ?? "ERROR"
-                        } else {
-                            newMasterCode._pegs = words.random(length: Int.random(in: 3...6)) ?? "ERROR"
-                        }
+                        newMasterCode._pegs = words.random(length: Int.random(in: 3...6), in: game.language) ?? "ERROR"
                     }
-                    print(newMasterCode)
-                    game.setMaster(masterCode: newMasterCode)
                 }
+                print(newMasterCode)
+                game.setMaster(masterCode: newMasterCode)
             }
         } else {
-            print("Not the same language")
+            print("MasterCode already set")
         }
     }
     
     func guess() {
-        if !game.guess.pegs.contains(Code.missingPeg), checker.isAWord(game.guess._pegs.lowercased(), in: game.languageCode)
+        if !game.guess.pegs.contains(Code.missingPeg),
+//        checker.isAWord(game.guess._pegs.lowercased(), in: game.language.code) ||
+         words.contains(game.guess._pegs.lowercased(), in: game.language)
         {
             withAnimation(Animation.guess) {
                 selection = 0
